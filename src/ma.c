@@ -1,12 +1,68 @@
+#include <unistd.h>  
+#include <fcntl.h>
+#include <stdlib.h>
+#include "ma.h"
 
-/**Este programa deverá permitir inserir novos artigos (especificando o nome, 
-descrição e preço de venda), ou alterar atributos de um dado artigo 
-(nome, descrição ou preço). Cada artigo tem um código numérico, 
-atribuído na criação como o próximo de uma sequência (1, 2, 3, . . . ). 
-Para o acesso a um artigo no ficheiro ARTIGOS poder ser feito usando o 
-código como índice, as entradas devem ter um tamanho fixo. Sendo o nome
- e descrição de tamanho variável, estes atributos no ficheiro de artigos 
- devem conter apenas “referências” (e.g., posição) onde se encontram num ficheiro STRINGS, em separado, contendo os nomes e descrições.
-É aceitável que o ficheiro STRINGS contenha nomes ou descrições já 
-obsoletos, desperdiçando algum espaço, de forma a que se possa apenas 
-acrescentar conteúdo mesmo aquando da alteração de nomes ou descrições. **/
+#define LENGTH 1024
+
+
+struct artigo
+{
+	char name[LENGTH];
+	char description[LENGTH];
+	double price;
+	size_t code;
+}; 
+
+Artigo create_Artigo(char name, char descricao, double price, size_t code) //abrir ficheiro e escrever lá
+{
+	Artigo a = (Artigo)malloc(sizeof(struct artigo));
+
+	a->name = NULL;
+	a->description = NULL;
+	a->price = 0;
+	a->code = 0;
+}
+
+void destroy_Artigo(Artigo a)
+{
+	free(a);
+}
+
+/**** Gets e Sets para alterar os dados *****/
+
+char nameArtigo(Artigo a)
+{
+	return a->name;
+}
+
+void changeName(Artigo a, char new_name)
+{
+	a->name = new_name;
+}
+
+char descriptionArtigo(Artigo a)
+{
+	return a->description;
+}
+
+void changeDescription(Artigo a, char new_description)
+{
+	a->description = new_description;
+}
+
+double priceArtigo(Artigo a)
+{
+	return a->price;
+}
+
+void changePrice(Artigo a, double new_price)
+{
+	a->price = new_price;
+}
+	
+int main()
+{
+	return 0;
+}
+
