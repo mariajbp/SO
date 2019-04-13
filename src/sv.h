@@ -5,6 +5,8 @@
 
 o que ser o stock
 
+qual a diferenca entre registar venda efetuada e receber pedido do cliente vendas
+
 */
 
 

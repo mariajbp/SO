@@ -39,9 +39,9 @@ char* nameArtigo(Artigo a)
 	return a->name;
 }
 
-void changeName(Artigo a, char new_name)
+void changeName(Artigo a, char new_name[LENGTH])
 {
-	a->name = new_name;
+	memcpy(a->name,new_name,LENGTH);
 }
 
 char* descriptionArtigo(Artigo a)
@@ -49,9 +49,9 @@ char* descriptionArtigo(Artigo a)
 	return a->description;
 }
 
-void changeDescription(Artigo a, char new_description)
+void changeDescription(Artigo a, char new_description[LENGTH])
 {
-	a->description = new_description;
+	memcpy(a->description,new_description,LENGTH);
 }
 
 double priceArtigo(Artigo a)
