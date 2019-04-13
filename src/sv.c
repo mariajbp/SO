@@ -9,3 +9,4 @@ pedido, fazendo com que este receba o intervalo (para ser agregado) do
 ficheiro de vendas desde a última agregação, e fazendo com que o 
 resultado da agregação seja escrito num ficheiro cujo nome reflecte o 
 período em causa (e.g., 20190324T14). **/
+

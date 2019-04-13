@@ -67,6 +67,8 @@ void changePrice(Artigo a, double new_price)
 
 // funcao inserçao (<nome> <preco>) -> 
 
+// funcao que apague, corre o ficheiro STRINGS = mesmo nome, mesmo preco -> delete
+
 
 int main()
 {
