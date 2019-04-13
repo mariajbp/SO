@@ -1,9 +1,10 @@
 #include <unistd.h>  
 #include <fcntl.h>
 #include <stdlib.h>
+#include <string.h>
 #include "ma.h"
 
-#define LENGTH 1024
+#define LENGTH 1024 //
 
 
 struct artigo
@@ -11,17 +12,19 @@ struct artigo
 	char name[LENGTH];
 	char description[LENGTH];
 	double price;
-	size_t code;
-}; 
+	size_t code; //
+};
 
-Artigo create_Artigo(char name, char descricao, double price, size_t code) //abrir ficheiro e escrever lá
+Artigo create_Artigo(char n[LENGTH], char d[LENGTH], double p, size_t c) //abrir ficheiro e escrever lá
 {
-	Artigo a = (Artigo)malloc(sizeof(struct artigo));
+	Artigo a = malloc(sizeof(struct artigo));
 
-	a->name = NULL;
-	a->description = NULL;
-	a->price = 0;
-	a->code = 0;
+	memcpy(a->name,n,LENGTH);
+	memcpy(a->description,d,LENGTH);
+	a->price = p;
+	a->code = c;
+
+	return a;
 }
 
 void destroy_Artigo(Artigo a)
@@ -31,7 +34,7 @@ void destroy_Artigo(Artigo a)
 
 /**** Gets e Sets para alterar os dados *****/
 
-char nameArtigo(Artigo a)
+char* nameArtigo(Artigo a)
 {
 	return a->name;
 }
@@ -41,7 +44,7 @@ void changeName(Artigo a, char new_name)
 	a->name = new_name;
 }
 
-char descriptionArtigo(Artigo a)
+char* descriptionArtigo(Artigo a)
 {
 	return a->description;
 }
@@ -60,7 +63,11 @@ void changePrice(Artigo a, double new_price)
 {
 	a->price = new_price;
 }
-	
+
+
+// funcao inserçao (<nome> <preco>) -> 
+
+
 int main()
 {
 	return 0;
