@@ -72,6 +72,11 @@ void changePrice(Artigo a, double new_price)
 
 int main()
 {
+
+	// i ( <nome> <preco> ) -> insere
+	// n ( <codigo> <new_nome> ) -> altera nome
+	// p ( <codigo> <new_preco> ) -> altera preco
+	
 	return 0;
 }
 
