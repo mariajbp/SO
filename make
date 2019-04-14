@@ -2,14 +2,15 @@ INC = ../include/
 OBJ = ../src/
 
 
-objects = 
+objects = $(OBJ)main.o
 CFLAGS = -g -Wall 
 CC = gcc
 
 
-SGV : $(objects)
-	$(CC) $(CFLAGS) -o SGV $(objects) 
+GV : $(objects)
+	$(CC) $(CFLAGS) -o GV $(objects) 
 
+main.o : $(INC)main.h
 
 
 .PHONY : clean
