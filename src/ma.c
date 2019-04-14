@@ -48,13 +48,21 @@ void changePrice(Artigo a, double new_price)
 }
 
 
-void insertArtigo()
+void insertArtigo(char[LENGTH] name, double price)
 {
+	endln = "\n"; 
+	space = " "
 	//abrir ficheiro, se não existir é criado
 	int fp = open("ARTIGOS.txt", O_CREAT | O_TRUNC | O_WRONLY, 0777);
-	//escrever em argv[1] o nome e argv[2] o preço, gerar um código consoante o numero da linha do ficheiro em que está
+	//escrever em argv[2] o nome e argv[3] o preço, gerar um código consoante o numero da linha do ficheiro em que está e escreve-o 
+	write(fp,name,strlen(name));
+	write(fp,space,strlen(space));
+	write(fp,price,sizeof(double));
+	write(fp,endln,strlen(endln));
 
 }
+
+/**
 
 // funcao que apaga um artigo, corre o ficheiro STRINGS = mesmo nome, mesmo preco -> delete
 void deleteArtigo(char[LENGTH] name, double price)
@@ -68,14 +76,26 @@ void deleteArtigo(char[LENGTH] name, double price)
 
  //flush
 }
+**/
 
-int main()
+int main(int argc, char *argv[]) //main do MA
 {
+	/**if(argv[1] == i)
+	{
+		//( <nome> <preco> ) -> insere
+	}
+	if(argv[1] == n)
+	{
+		// n ( <codigo> <new_nome> ) -> altera nome
+	}
+	if(argv[1] == p)
+	{
+		// p ( <codigo> <new_preco> ) -> altera preco
+	}
 
-	// i ( <nome> <preco> ) -> insere
-	// n ( <codigo> <new_nome> ) -> altera nome
-	// p ( <codigo> <new_preco> ) -> altera preco
-	
+	*/
+	insertArtigo(name,price);
+
 	return 0;
 }
 
