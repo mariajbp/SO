@@ -1,18 +1,11 @@
-#include <unistd.h>  
-#include <fcntl.h>
-#include <stdlib.h>
-#include <string.h>
-#include "ma.h"
-
-#define LENGTH 1024 //
+#include "ma.h" 
 
 
 struct artigo
 {
 	char name[LENGTH];
-	char description[LENGTH];
 	double price;
-	size_t code; //
+	size_t code[7]; 
 };
 
 Artigo create_Artigo(char n[LENGTH], char d[LENGTH], double p, size_t c) //abrir ficheiro e escrever lá
@@ -42,17 +35,7 @@ char* nameArtigo(Artigo a)
 void changeName(Artigo a, char new_name[LENGTH])
 {
 	memcpy(a->name,new_name,LENGTH);
-}
-
-char* descriptionArtigo(Artigo a)
-{
-	return a->description;
-}
-
-void changeDescription(Artigo a, char new_description[LENGTH])
-{
-	memcpy(a->description,new_description,LENGTH);
-}
+}	
 
 double priceArtigo(Artigo a)
 {
@@ -65,10 +48,26 @@ void changePrice(Artigo a, double new_price)
 }
 
 
-// funcao inserçao (<nome> <preco>) -> 
+void insertArtigo()
+{
+	//abrir ficheiro, se não existir é criado
+	int fp = open("ARTIGOS.txt", O_CREAT | O_TRUNC | O_WRONLY, 0777);
+	//escrever em argv[1] o nome e argv[2] o preço, gerar um código consoante o numero da linha do ficheiro em que está
 
-// funcao que apague, corre o ficheiro STRINGS = mesmo nome, mesmo preco -> delete
+}
 
+// funcao que apaga um artigo, corre o ficheiro STRINGS = mesmo nome, mesmo preco -> delete
+void deleteArtigo(char[LENGTH] name, double price)
+{
+	int fp = open("STRINGS.txt", O_TRUNC | O_RDWR, 0777);
+	while(!EOF)
+	{
+		
+
+	}
+
+ //flush
+}
 
 int main()
 {
