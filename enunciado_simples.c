@@ -8,7 +8,7 @@
 		<index> <index_posicao para o ficheiro STRINGS> <preco>
 
 		index			-> numero sequencia que permite obter a linha do artigo [000 000 a 999999]
-		index_posicao	-> posicao referencia do inicio da string no ficheiro STRINGS [000 000 a 999999]
+		index_posicao		-> posicao referencia do inicio da string no ficheiro STRINGS [000 000 a 999999]
 		preco			-> preco do artigo [000.00 a 999.99]
 
 	*/
