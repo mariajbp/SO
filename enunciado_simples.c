@@ -99,8 +99,8 @@
 	O sistema devera permitir a execucao concorrente de varios clientes de venda.
 
 	O programa recebe todo o seu input pelo stdin:
-		<code> 				--> mostra no stdout stock e preco
-		<code> <quantidade> --> atualiza o stock e mostra o no stdout
+		<code> 			--> mostra no stdout stock e preco
+		<code> <quantidade> 	--> atualiza o stock e mostra o no stdout
 
 	*/
 
