@@ -5,56 +5,6 @@
 #include <stdio.h>
 #include <fcntl.h>
 
-/*
-struct artigo
-{
-	char name[LENGTH];
-	double price;
-	size_t code[7]; 
-};
-
-Artigo create_Artigo(char n[LENGTH], double p, size_t c) //abrir ficheiro e escrever lá
-{
-	Artigo a = malloc(sizeof(struct artigo));
-	memcpy(a->name,n,LENGTH);
-	a->price = p;
-	a->code = c;
-
-	return a;
-}
-
-void destroy_Artigo(Artigo a)
-{
-	free(a);
-}
-*/
-
-/**** Gets e Sets para alterar os dados *****/
-
-/*
-
-char* nameArtigo(Artigo a)
-{
-	return a->name;
-}
-
-void changeName(Artigo a, char new_name[LENGTH])
-{
-	memcpy(a->name,new_name,LENGTH);
-}	
-
-double priceArtigo(Artigo a)
-{
-	return a->price;
-}
-
-void changePrice(Artigo a, double new_price)
-{
-	a->price = new_price;
-}
-
-*/
-
 int insertString(char* name, int size)
 {
 	int ref = 0;
@@ -154,9 +104,8 @@ char buff[4];
 	}
 
 }
+
 /**
-
-
 
 // funcao que apaga um artigo, corre o ficheiro STRINGS = mesmo nome, mesmo preco -> delete
 void deleteArtigo(char[LENGTH] name, double price)
@@ -171,6 +120,89 @@ void deleteArtigo(char[LENGTH] name, double price)
  //flush
 }
 **/
+
+// Função que recebe um codigo, vai ao ficheiros de artigos e retorna o preço desse artigo
+double getPrice(int code)
+{
+	double price;
+	int fd = open("artigos.txt", O_RDONLY);
+
+	if(fd == -1)
+	{
+		perror("Unable to open file");
+		exit(-1);
+	}
+	else
+	{
+		lseek(fd, code*(sizeof(int)*2+sizeof(double)), SEEK_SET);
+		lseek(fd, 2*sizeof(int), SEEK_CUR);
+		read(fd, &price, sizeof(double));
+		close(fd);
+	}
+
+	return price;
+}
+
+// Função que recebe um codigo, vai ao ficheiros de artigos e altera o preço desse artigo
+void changePrice(int code, double newp)
+{
+	int fd = open("artigos.txt", O_RDONLY);
+	if(fd == -1)
+	{
+		perror("Unable to open file");
+		exit(-1);
+	}
+	else
+	{
+		lseek(fd, code*(sizeof(int)*2+sizeof(double)), SEEK_SET); 
+		lseek(fd, 2*sizeof(int), SEEK_CUR); 
+		write(fd, &newp, sizeof(double));
+		close(fd);
+	}
+
+}
+
+//Função que recebe um codigo, vai ao ficheiros de artigos e altera o nome desse artigo
+int rename(int code, char* new_name)
+{
+	int fd = open("strings.txt", O_WRONLY);
+	if(fd == -1)
+	{
+		perror("Unable to open file");
+		exit(-1);
+	}
+	else
+	{
+
+		int ref = lseek(fd, 0 ,SEEK_END);
+		write(fd, new_name, strlen(new_name));
+		close(fd);
+	}
+	return ref;
+}
+
+//Função que faz update da referencia
+void updateRef(int code, int ref)
+{
+	int fd = open("artigos.txt", O_WRONLY);
+	if(fd == -1)
+	{
+		perror("Unable to open file");
+		exit(-1);
+	}
+	else
+	{
+		lseek(fd, code*(sizeof(int)*2+sizeof(double)), SEEK_SET); 
+		lseek(fd, sizeof(int), SEEK_CUR); 
+		write(fd, &ref, sizeof(int));
+		close(fd);
+	}
+}
+
+void cleanSTR()
+{
+
+}
 
 int main(int argc, char *argv[]) //main do MA
 {
