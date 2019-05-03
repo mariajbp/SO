@@ -121,27 +121,7 @@ void deleteArtigo(char[LENGTH] name, double price)
 }
 **/
 
-// Função que recebe um codigo, vai ao ficheiros de artigos e retorna o preço desse artigo
-double getPrice(int code)
-{
-	double price;
-	int fd = open("artigos.txt", O_RDONLY);
 
-	if(fd == -1)
-	{
-		perror("Unable to open file");
-		exit(-1);
-	}
-	else
-	{
-		lseek(fd, code*(sizeof(int)*2+sizeof(double)), SEEK_SET);
-		lseek(fd, 2*sizeof(int), SEEK_CUR);
-		read(fd, &price, sizeof(double));
-		close(fd);
-	}
-
-	return price;
-}
 
 // Função que recebe um codigo, vai ao ficheiros de artigos e altera o preço desse artigo
 void changePrice(int code, double newp)
@@ -199,10 +179,20 @@ void updateRef(int code, int ref)
 	}
 }
 
+
+//função que faz a limpeza do ficheiro strings
 void cleanSTR()
 {
 
 }
+
+int isitWasting()
+{
+	fseek(f, 0, SEEK_END); // seek to end of file
+	size = ftell(f); // get current file pointer
+
+}
+	
 
 int main(int argc, char *argv[]) //main do MA
 {
