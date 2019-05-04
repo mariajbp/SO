@@ -9,5 +9,11 @@ qual a diferenca entre registar venda efetuada e receber pedido do cliente venda
 
 */
 
+/**
+ * O QUE FAZ
+ * @param O QUE RECEBE
+ * @param O QUE RETORNA
+ */
+
 
 #endif
