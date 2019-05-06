@@ -1,17 +1,4 @@
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <fcntl.h>
-#include <string.h>
-//#include "ma.h" 
-
-
-//FORMATO : <ref> <size> <price>
-//size_artigos = sizeof(int) + sizeof(short) + sizeof(float) 
-#define size_artigos 10
-
+#include "ma.h" 
 
 /*
 	Função que adiciona o nome de artigo no final do ficheiro strings e devolve a referência
@@ -127,7 +114,8 @@ void updateRef(int code, int ref, short size)
 }
 
 //Função que faz parsing de uma linha
-void parse(char* buff, char** str){
+void parse(char* buff, char** str)
+{
 
 	char* tok;
 	tok = strtok(buff, " ");
@@ -137,21 +125,28 @@ void parse(char* buff, char** str){
 		tok = strtok(NULL, " ");
 	}
 }
-/*
-//função que verifica se o lixo já chegou a 20%
-int checkTrash(){}
-	
 
 
-//função que faz a limpeza do ficheiro strings
-void cleanSTR()
+//função que calcula se há desperdicio
+//retorna 0 caso não haja desperdicio
+//retorna 1 caso haja desperdicio 
+int isitWasting()
 {
-
+	int res;
+	fseek(fd, 0, SEEK_END); // seek to end of file
+	int fsize = ftell(fd); // get current file pointer
+	int rsize = repeatedLines(fd);
+	if((fsize *0.2) <= rsize)
+		return res = 0;
+	else
+		return res = 1;
 }
 
-
-
-
+//função que calcula o número de informação repetidas/lixo
+int repeatedLines(/**recebe o ficheiro**/)
+{
+	
+}
 
 // funcao que apaga um artigo, corre o ficheiro STRINGS = mesmo nome, mesmo preco -> delete
 void deleteArtigo(char[LENGTH] name, float price)

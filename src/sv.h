@@ -15,5 +15,11 @@ qual a diferenca entre registar venda efetuada e receber pedido do cliente venda
  * @param O QUE RETORNA
  */
 
+/**
+ * Função que dado o código do artigo retorna o seu preço
+ * @param código do artigo
+ * @param preço do artigo
+ */
+double getPrice(int code);
 
 #endif
