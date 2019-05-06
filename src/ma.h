@@ -41,7 +41,7 @@ void changePrice(int code, double newp);
  * Função que dado o código do artigo e um novo nome, altera o seu nome atual
  * @param código e novo nome de um artigo
  */
-int rename(int code, char* new_name);
+int renameStr(int code, char* new_name);
 
 /**
  * Função que dado o código do artigo e uma nova referencia, atualiza a referencia

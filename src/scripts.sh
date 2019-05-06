@@ -1,4 +1,5 @@
 #!/bin/bash
-echo "ayy"
-echo "lmao"
-tail ~/.bash_history
+i bolas 2.0
+i massa 1.75
+i roupa 9.99
+
