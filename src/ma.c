@@ -74,8 +74,9 @@ void changePrice(int code, float newp)
 
 }
 
+
 //Função que vai ao ficheiros de artigos e acrescenta no fim do ficheiro o nome novo
-int renameStr(char* new_name)
+int renameStr(int code, char* new_name)
 {	
 	int ref = -1;
 	int fd = open("strings", O_WRONLY);
@@ -91,6 +92,17 @@ int renameStr(char* new_name)
 	}
 	close(fd);
 	return ref;
+} 
+
+int twenty(short s, int ns)
+{
+	int res;
+	if((ns*0.2)=>s)
+		res = 0;
+		
+	else
+		res = 1;
+	return res;
 }
 
 //Função que faz update da referencia
@@ -113,8 +125,31 @@ void updateRef(int code, int ref, short size)
 	close(fd);
 }
 
+//função que devolve o tamanho de um artigo dado o seu código
+short getSize(int code)
+{
+	int size;
+	int fd = open("artigos", O_WRONLY);
+	if(fd == -1)
+	{
+		perror("Unable to open file");
+		_exit(-1);
+	}
+	else
+	{
+		lseek(fd, (code - 1)*size_artigos, SEEK_SET);  //(code-1) porque os códigos começam no 1
+		lseek(fd, sizeof(int), SEEK_CUR); 
+		write(fd, &size, sizeof(float));
+	}
+	close(fd);
+}
+
+
+
+
+
 //Função que faz parsing de uma linha
-void parse(char* buff, char** str)
+int parse(char* buff, char** str)
 {
 
 	char* tok;
@@ -124,44 +159,8 @@ void parse(char* buff, char** str)
 		str[i] = strdup(tok);
 		tok = strtok(NULL, " ");
 	}
+	return i;
 }
-
-
-//função que calcula se há desperdicio
-//retorna 0 caso não haja desperdicio
-//retorna 1 caso haja desperdicio 
-int isitWasting()
-{
-	int res;
-	fseek(fd, 0, SEEK_END); // seek to end of file
-	int fsize = ftell(fd); // get current file pointer
-	int rsize = repeatedLines(fd);
-	if((fsize *0.2) <= rsize)
-		return res = 0;
-	else
-		return res = 1;
-}
-
-//função que calcula o número de informação repetidas/lixo
-int repeatedLines(/**recebe o ficheiro**/)
-{
-	
-}
-
-// funcao que apaga um artigo, corre o ficheiro STRINGS = mesmo nome, mesmo preco -> delete
-void deleteArtigo(char[LENGTH] name, float price)
-{
-	int fp = open("strings", O_TRUNC | O_RDWR, 0777);
-	while(!EOF)
-	{
-		
-
-	}
-
- //flush
-}
-
-
 //«««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««
 
 /*
@@ -238,7 +237,7 @@ int main(int argc, char *argv[]){
 	int r ;
 	
 	while( (r = read(0, buff, 39)) ){
-			//checkTrash();
+			//wastedSpace();
 			
 			buff[r+1] = "\0";
 
@@ -294,4 +293,5 @@ int main(int argc, char *argv[]){
 
 	return 0;
 }
+
 
