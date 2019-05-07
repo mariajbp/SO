@@ -24,7 +24,7 @@ int insertString(char* name, short size)
 
 
 /*
-	Função que insere um artigo no fim do ficheiro artigos ǵerando e devolvendo o código 
+	Função que insere um artigo no fim do ficheiro artigos gerando e devolvendo o código 
 */
 int insertArtigo(char* name, float price)
 {
