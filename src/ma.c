@@ -1,4 +1,18 @@
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <string.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <fcntl.h>
 #include "ma.h" 
+
+
+//FORMATO : <ref> <size> <price>
+//size_artigos = sizeof(int) + sizeof(short) + sizeof(float) 
+#define size_artigos 10
+
 
 /*
 	Função que adiciona o nome de artigo no final do ficheiro strings e devolve a referência
@@ -9,10 +23,7 @@ int insertString(char* name, short size)
 	int fd = open("strings", O_CREAT | O_WRONLY, 0600);
 
 	if(fd == -1)
-	{
-		perror("Unable to open file strings");
 		_exit(-1);
-	}
 	else
 	{	
 		ref = lseek(fd, 0, SEEK_END);
@@ -32,10 +43,7 @@ int insertArtigo(char* name, float price)
 	int fd = open("artigos", O_CREAT | O_RDWR , 0600);
 
 	if(fd == -1)
-	{
-		perror("Unable to open file stocks");
 		_exit(-1);
-	}
 	else
 	{	
 		short size = strlen(name);
@@ -60,10 +68,7 @@ void changePrice(int code, float newp)
 {
 	int fd = open("artigos", O_WRONLY);
 	if(fd == -1)
-	{
-		perror("Unable to open file");
 		_exit(-1);
-	}
 	else
 	{
 		lseek(fd, (code - 1)*size_artigos, SEEK_SET);  //(code-1) porque os códigos começam no 1
@@ -81,10 +86,7 @@ int renameStr(int code, char* new_name)
 	int ref = -1;
 	int fd = open("strings", O_WRONLY);
 	if(fd == -1)
-	{
-		perror("Unable to open file");
 		_exit(-1);
-	}
 	else
 	{	
 		ref = lseek(fd, 0 ,SEEK_END);
@@ -110,10 +112,7 @@ void updateRef(int code, int ref, short size)
 {
 	int fd = open("artigos", O_WRONLY);
 	if(fd == -1)
-	{
-		perror("Unable to open file");
 		_exit(-1);
-	}
 	else
 	{
 		short t;
