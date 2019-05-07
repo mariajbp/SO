@@ -2,12 +2,16 @@
 #define __MA_H__
 
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <fcntl.h>
+#include <string.h>
 
-
+//FORMATO : <ref> <size> <price>
+//size_artigos = sizeof(int) + sizeof(short) + sizeof(float) 
+#define size_artigos 10
 
 /**
  * Função que escreve o nome de um artigo no ficheiro strings.txt
@@ -23,12 +27,6 @@ int insertString(char* name, int size);
  */
 void insertArtigo(char* name, double price);
 
-/**
- * Função que dado o código do artigo retorna o seu preço
- * @param código do artigo
- * @param preço do artigo
- */
-double getPrice(int code);
 
 /**
  * Função que dado o código do artigo e um novo preço, altera o seu preço atual
@@ -48,6 +46,19 @@ int renameStr(int code, char* new_name);
  * @param código e referencia de um artigo
  */
 void updateRef(int code, int ref);
+
+
+/**
+ * Função que faz parsing de uma linha
+ * @param 
+ */
+void parse(char* buff, char** str)
+
+/**
+ * Função que calcula se o desperdicio é superior a 20%
+ */
+int isitWasting()
+
 
 
 #endif
