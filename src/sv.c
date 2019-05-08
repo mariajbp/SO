@@ -4,16 +4,17 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <fcntl.h>
-
+#include <string.h>
+#include <signal.h>
+#include "sv.h"
+#include "ma.h"
 
 /*
-
 NOTAS:
 	->Formato do stock: <quantidade em stock>
 	->Formato das vendas: <código do artigo/index> <quantidade vendida> <montante total>
 	->Nome dos ficheiros: stocks vendas
 	->O SV não envia nada para o stdout nem recebe nada do stdin, apenas dos outros módulos
-
 */
 
 
@@ -22,25 +23,6 @@ NOTAS:
 //Quantidade size = sizeof(int) = 4 bytes
 // Montante = sizeof(float) = 4 bytes
 
-/*
-	Função que acrescenta um codigo de artigo ao ficheiro stocks,
-	sempre que for acrescentado no ficheiro ARTIGOS (ou seja, pelo ma).
-*/
-void stockAppend(){
-	int q = 0;
-	int w = -1;
-	int fd = open("stocks", O_WRONLY | O_CREAT, 0600);
-
-	if(fd == -1){
-		perror("Unable to open file stocks");
-		_exit(-1);
-	}
-	else{
-		lseek(fd, 0, SEEK_END);
-		w += write(fd, &q, sizeof(int) );
-	}
-	close(fd);
-}
 
 /*
 	Função que procura um código no ficheiro 
@@ -52,20 +34,16 @@ int stocksReadQ(int code){
 
 	int fd = open("stocks", O_RDONLY);
 
-	if(fd == -1){
-		perror("Unable to open file stocks");
+	if(fd == -1)
 		_exit(-1);
-	}
 	else{
 		//Atualiza o apontador para o local do código + da quantidade
 		lseek(fd, (code-1)*sizeof(int), SEEK_SET);
 		
 		r = read(fd, &quant, sizeof(int));
 			
-		if(r == 0){
-			perror("Artigo not found");
+		if(r == 0)
 			_exit(-1);
-		}
 	}
 	close(fd);
 	return quant;
@@ -76,46 +54,61 @@ int stocksReadQ(int code){
 	Função que dado um código e uma quantidade 
 	atualiza no ficheiro stocks.
 */
-void stocksWrite(int code, int q){
+int stocksWrite(int code, int q){
 	int quant = 0;
 	int r = -1;
 	int w = -1;
 
 	int fd = open("stocks", O_WRONLY);
 
-	if(fd == -1){
-		perror("Unable to open file stocks");
+	if(fd == -1)
 		_exit(-1);
-	}
 	else{
-		//Atualiza o apontador para o local do código + local da quantidade
+		
 		lseek(fd, (code-1)*sizeof(int), SEEK_SET);
 		r = read(fd, &quant, sizeof(int));
 			
-		if(r == 0){
-			perror("Artigo not found");
+		if(r == 0)
 			_exit(-1);
-		}
 		else{
 			quant += q;
+			lseek(fd, -sizeof(int),SEEK_CUR);
 			w = write(fd, &quant, sizeof(int));
 		}
 	}
 	close(fd);
+	return quant;
 }
+/*
+ 	Função que calcula o montante de uma venda dado o code e a quantidade
+*/
+float calculaMont(int code, int quant){
+	float price = -1.0;
+	int fd = open("artigos", O_RDONLY);
+
+	if(fd == -1)
+			_exit(-1);
+	else{
+		lseek(fd, (code-1)*(sizeof(int)+sizeof(short)) , SEEK_SET);
+		read(fd, &price, sizeof(float));
+		price*=quant;
+	}
+	close(fd);
+	return price;
+}
+
 
 /*
 	Função que dado uma venda, 
 	acrescenta-a no ficheiro vendas.
 */
 void vendasAppend(int code, int quant, float mont){
+
 	int w = -1;
 	int fd = open("vendas", O_WRONLY | O_CREAT, 0600);
 
-	if(fd == -1){
-		perror("Unable to open file strings");
+	if(fd == -1)
 		_exit(-1);
-	}
 	else{
 		lseek(fd, 0, SEEK_END);
 		w = write(fd, &code, sizeof(int));
@@ -134,10 +127,7 @@ float getPrice(int code)
 	int fd = open("artigos.txt", O_RDONLY);
 
 	if(fd == -1)
-	{
-		perror("Unable to open file");
 		_exit(-1);
-	}
 	else
 	{
 		lseek(fd, (code-1)*10, SEEK_SET);
@@ -149,97 +139,77 @@ float getPrice(int code)
 	return price;
 }
 
-//«««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««
 /*
-	Função que imprime o ficheiro stocks 
-	na totalidade no ecrã usando printf. 
-	PARA TESTES!
-
-void printfStocks(){
-	int q = 0;
-	int w = 1;
-
-	int fd = open("stocks", O_RDONLY);
-
-
-		while(r = (read(fd, &q, sizeof(int)) ) ){
-			w = write(1, &q, r);
-			//printf("Quantidade em stock: %d\n", q);
-		}
-
-	 close(fd);
-
-}
+	Handler do Ctr-C para terminar o processo e fazer unlink do pipe pedidos
 */
-
-/*
-	Função que consulta o ficheiro
-	stocks e imprime as informações de um
-	dado código de artigo, usando printf.
-	PARA TESTES!
-*/
-void printfSingleStocks(int code){
-	int quant = -1;
-	int q = -1;
-
-
-	int fd = open("stocks", O_RDONLY);
-
-		lseek(fd, code*sizeof(int), SEEK_SET);
-		read(fd, &quant, sizeof(int));
-
-
-	 close(fd);
-	 printf("Quantidade: %d\n", quant);
+void terminar(int signum){
+	unlink("pedidos");
+	pid_t p = getpid();
+	kill(p, SIGQUIT);
 }
 
-/*
-	Função que imprime o ficheiro vendas 
-	na totalidade no ecrã usando printf. 
-	PARA TESTES!
-*/
-void printfVendas(){
-	int code = 0;
-	int q = 0;
-	float m = 0.0;
-	int r = 1;
-
-	int fd = open("vendas", O_RDONLY);
-
-		while(r != 0){
-			r = read(fd, &code, sizeof(int));
-			printf("Código do artigo: %d\n", code);
-
-			r = read(fd, &q, sizeof(int));
-			printf("Quantidade vendida: %d\n", q);
-
-			r = read(fd, &m, sizeof(float));
-			printf("Montante: %f\n", m); 
-		}
-
-	 close(fd);
-}
-//Imprime 1 vez a mais não sei porquê
 
 //«««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««
 
 int main(int argc, char const *argv[]){
-	int code = 0;
-	int a = mkfifo("art", 0600);		//pipes para os artigos
+	char** args = malloc(sizeof(char*));
+	char *c = malloc(40);
+	int r, i;
 
-	if(a == -1){
-		perror("Pipe art");
+	signal(SIGINT, terminar);
+	int a = mkfifo("pedidos", 0600);		//pipes para os artigos
+
+	if(a == -1)
 		_exit(-1);
-	}
 	else{
-		int fd = open("art", O_RDONLY);
-		char c;
+
 		while(1){
-			read(fd, &c, 1);
-			if(c == "1")
-				stockAppend();
+			int fd = open("pedidos", O_RDONLY);
+			
+			while( (r = read(fd, c, 40 )) ){
+
+				c[r+1] = "\0";
+				i = parse(c,args);
+
+				if(i == 2){	
+					char* pid = args[0];
+					int code = atoi(args[1]);
+
+					float p = getPrice(code);
+					int q = stocksReadQ(code);
+					int resp = open( pid, O_WRONLY);
+						if(resp == -1)
+							_exit(-1);
+						else{
+							write(resp, &p, sizeof(float));
+							write(resp, &q, sizeof(int));
+							close(resp);
+						}
+			 	}
+			 	if(i == 3){
+				 		char* pid = args[0];
+						int code = atoi(args[1]);
+						int quant = atoi(args[2]);
+
+			 			if(quant > 0){
+			 				stocksWrite(code, quant);
+			 			}
+			 			else{
+			 				float m = calculaMont(code, quant);
+			 				vendasAppend(code, quant, m);
+			 				int ns = stocksWrite(code, -m);
+			 				int resp = open(pid, O_WRONLY);
+								if(resp == -1)
+									_exit(-1);
+								else{
+									write(resp, &ns, sizeof(int));
+									close(resp);
+								}
+			 			}
+			 	}
+			}
+			close(fd);		
 		}
-		close(fd);
 	}
 	return 0;
 }
