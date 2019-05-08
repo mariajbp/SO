@@ -139,6 +139,30 @@ float getPrice(int code)
 	return price;
 }
 
+
+/*
+	Função que realiza uma venda/restock
+*/
+int makeVenda(int code, int quant){
+	
+	int ns;
+	float m;
+
+	if(quant <= stocksReadQ(code)){
+		m = calculaMont(code, quant);
+		vendasAppend(code, quant, m);
+		ns = stocksWrite(code, -m);
+	}
+	else{
+		int q = stocksReadQ(code);
+		m = calculaMont(code, q);
+		vendasAppend(code, q, m);
+		ns = stocksWrite(code, -m);
+	}
+
+	return ns;
+}
+
 /*
 	Handler do Ctr-C para terminar o processo e fazer unlink do pipe pedidos
 */
@@ -153,7 +177,7 @@ void terminar(int signum){
 
 int main(int argc, char const *argv[]){
 	char** args = malloc(sizeof(char*));
-	char *c = malloc(40);
+	char *c = malloc(100);
 	int r, i;
 
 	signal(SIGINT, terminar);
@@ -166,7 +190,7 @@ int main(int argc, char const *argv[]){
 		while(1){
 			int fd = open("pedidos", O_RDONLY);
 			
-			while( (r = read(fd, c, 40 )) ){
+			while( (r = read(fd, c, 99 )) ){
 
 				c[r+1] = "\0";
 				i = parse(c,args);
@@ -177,7 +201,7 @@ int main(int argc, char const *argv[]){
 
 					float p = getPrice(code);
 					int q = stocksReadQ(code);
-					int resp = open( pid, O_WRONLY);
+					int resp = open(pid, O_WRONLY);
 						if(resp == -1)
 							_exit(-1);
 						else{
@@ -195,10 +219,9 @@ int main(int argc, char const *argv[]){
 			 				stocksWrite(code, quant);
 			 			}
 			 			else{
-			 				float m = calculaMont(code, quant);
-			 				vendasAppend(code, quant, m);
-			 				int ns = stocksWrite(code, -m);
-			 				int resp = open(pid, O_WRONLY);
+			 				makeVenda(code, quant);
+							int resp = open(pid, O_WRONLY);
+
 								if(resp == -1)
 									_exit(-1);
 								else{
