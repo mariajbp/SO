@@ -1,4 +1,3 @@
-
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <string.h>
@@ -6,6 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <fcntl.h>
+#include <signal.h>
 #include "ma.h" 
 
 
@@ -160,74 +160,24 @@ int parse(char* buff, char** str)
 	}
 	return i;
 }
-//«««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««
 
 /*
-	Função que imprime os artigos, 
-	Recebe quantos artigos quer imprimir
-	APENAS PARA TESTES
+	Função que acrescenta um codigo de artigo ao ficheiro stocks,
+	sempre que for acrescentado no ficheiro ARTIGOS (ou seja, pelo ma).
 */
+void stockAppend(){
+	int q = 0;
+	int w = -1;
+	int fd = open("stocks", O_WRONLY | O_CREAT, 0600);
 
-
-void printfArtigos(int n){
-
-	int fd = open("artigos", O_RDONLY);
-
-	if(fd == -1){
-			perror("Unable to open file strings");
-			_exit(-1);
-		}
-	else{
-			short size = -1;
-			int ref = -1;
-			float price = 0.0; 
-			while(n > 0){
-			
-
-			read(fd, &ref, 4);
-			printf("Ref: %d\n", ref);
-		//	write(1, &ref, 4);
-
-			read(fd, &size, 2);
-			printf("Size: %d\n", size);
-		//	write(1, &size, 2);
-
-			read(fd, &price, 4);
-			printf("Price: %f\n", price);
-		//	write(1, &price, 4);
-			n--;
-		}
-	}
-	 close(fd);
-
-}
-
-/*
-	Função que imprime as strings, 
-	APENAS PARA TESTES
-*/
-void printStrings(int size){
-
-	int fd = open("strings", O_RDONLY);
-
-	if(fd == -1){
-		perror("Unable to open file strings");
+	if(fd == -1)
 		_exit(-1);
-	}
 	else{
-		char buff[size];
-
-		int r = read(fd, buff, sizeof(char)*size);
-
-		close(fd);
-
-		write(1, buff, r);
+		lseek(fd, 0, SEEK_END);
+		w += write(fd, &q, sizeof(int) );
 	}
-
+	close(fd);
 }
-
-
-
 
 	
 
@@ -248,16 +198,7 @@ int main(int argc, char *argv[]){
 
 				insertArtigo(args[1], atof(args[2]));
 
-				//Pipe para o sv
-					int fd = open("art", O_WRONLY);
-					if(fd < 0){
-						perror("Unable to open pipe art");
-						_exit(-1);
-					}
-					else{
-						write(fd, "1", 1);
-						close(fd);
-					}
+				stockAppend();
 
 				free(args);
 			}
