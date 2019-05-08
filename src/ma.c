@@ -127,7 +127,7 @@ void updateRef(int code, int ref, short size)
 //função que devolve o tamanho de um artigo dado o seu código
 short getSize(int code)
 {
-	int size;
+	short size;
 	int fd = open("artigos", O_WRONLY);
 	if(fd == -1)
 	{
@@ -138,7 +138,7 @@ short getSize(int code)
 	{
 		lseek(fd, (code - 1)*size_artigos, SEEK_SET);  //(code-1) porque os códigos começam no 1
 		lseek(fd, sizeof(int), SEEK_CUR); 
-		write(fd, &size, sizeof(float));
+		write(fd, &size, sizeof(short));
 	}
 	close(fd);
 }
