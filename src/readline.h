@@ -8,9 +8,9 @@
 
 
 /**
- * O QUE FAZ
- * @param O QUE RECEBE
- * @param O QUE RETORNA
+ * Lê uma linha de um descritor
+ * @param fildes e um buffer
+ * @param o numero de caracteres lidos
  */
 
-int readln(int fildes, char *buf, int buf_size, ssize_t nc);
+int readln(int fildes, char *buf);

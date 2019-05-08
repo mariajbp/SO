@@ -1,21 +1,23 @@
 #include "readline.h" 
 
 
-int readln(int fildes, char *buf, int buf_size, ssize_t nc)
+int readln(int fildes, char *buf)
 {
-    int n = 0, i = 1;
-    char c = 0;
+    int n = 0, r = 1, i;
+    int c = 0;
+    char* buff[100]
+    int buf_size = 99;
 
-    while (i && n < buf_size && c!='\n')
+    r = read(fildes, &c, buff_size);
+
+    for(i = 0; i <= r; i++)
     {
-        i = read(fildes, &c, nc);
-        if (i)
+        if(buff[i] == '\n')
         {
-            buf[n] = nc;
-            n++;
+            buff[i] = "\0";
+            break;
         }
-        if( c=='\0') break;
+        c++;
     }
-    buf[n-1]='\0';
-    return n;
+    return c;
 }
