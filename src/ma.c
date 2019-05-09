@@ -44,7 +44,7 @@ int parse(char* buff, char** str){
 int insertString(char* name, short size)
 {
 	int ref = 0;
-	int fd = open("strings", O_CREAT | O_WRONLY, 0600);
+	int fd = open("strings", O_CREAT | O_WRONLY, 0664);
 
 	if(fd == -1)
 		_exit(-1);
@@ -64,7 +64,7 @@ int insertString(char* name, short size)
 int insertArtigo(char* name, float price)
 {
 	int code = -1;
-	int fd = open("artigos", O_CREAT | O_RDWR , 0600);
+	int fd = open("artigos", O_CREAT | O_RDWR , 0664);
 
 	if(fd == -1)
 		_exit(-1);
@@ -193,7 +193,7 @@ float getPrice(int code)
 void stockAppend(){
 	int q = 0;
 	int w = -1;
-	int fd = open("stocks", O_WRONLY | O_CREAT, 0600);
+	int fd = open("stocks", O_WRONLY | O_CREAT,0664);
 
 	if(fd == -1)
 		_exit(-1);

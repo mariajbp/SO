@@ -114,7 +114,7 @@ float calculaMont(int code, int quant){
 void vendasAppend(int code, int quant, float mont){
 
 	int w = -1;
-	int fd = open("vendas", O_WRONLY | O_CREAT, 0600);
+	int fd = open("vendas", O_WRONLY | O_CREAT, 0664);
 
 	if(fd == -1)
 		_exit(-1);
@@ -190,7 +190,7 @@ int main(int argc, char const *argv[]){
 	int r, i;
 
 	signal(SIGINT, terminar);
-	int a = mkfifo("pedidos", 0600);		//pipes para os artigos
+	int a = mkfifo("pedidos", 0664);		//pipes para os artigos
 
 	while(1){
 		int fd = open("pedidos", O_RDONLY);
