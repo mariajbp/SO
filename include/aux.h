@@ -12,15 +12,20 @@
 
 
 /**
- * Função que lê linha a linha de um descritor fildes.
+ * Função que lê linha a linha de um descritor fildes
+ * @param 
+ * @param 
+ * @param
+ * @returns
  */
-
 ssize_t readln(int fildes, void *buff, size_t n);
 
 
 /**
  * Função que faz parsing de uma linha
  * @param 
+ * @param 
+ * @returns
  */
 int parse(char* buff, char** str);
 
