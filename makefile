@@ -1,17 +1,18 @@
-INC = ../include/
-OBJ = ../src/
+INC = include/
+OBJ = src/
 
-objects = $(OBJ)ma.o $(OBJ)sv.o
+objects = $(OBJ)aux.o $(OBJ)ma $(OBJ)sv $(OBJ)cv 
 CFLAGS = -g -Wall -O2
 CC = gcc
 
+.DEFAULT_GOAL := all
 
 all: $(objects) 
 
-ma : 
-	$(CC) $(CFLAGS) -o ma ma.c
-sv : 
-	$(CC) $(CFLAGS) -o ma ma.c
+sv : $(INC)aux.h $(INC)sv.h
+cv : $(INC)aux.h $(INC)cv.h
+ma : $(INC)ma.h  $(INC)aux.h 
+aux.o : $(INC)aux.h 
 
 
 .PHONY : clean

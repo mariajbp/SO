@@ -1,13 +1,37 @@
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <string.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <fcntl.h>
-#include <signal.h>
-#include "ma.h" 
+#include "../include/aux.h"
+#include "../include/ma.h" 
 
+
+ssize_t readln(int fildes, void *buff, size_t n){ 
+    char c ;
+    size_t s = 0;
+    char* temp = (char *)buff;
+
+    while( s < n && read(fildes, &c, 1) == 1 ){      
+        if(c == '\0')
+        	return s;
+        temp[s++] = c;
+        if(c == '\n')
+        	return s;
+    }
+
+    return s;
+}
+
+//Função que faz parsing de uma linha
+int parse(char* buff, char** str){
+
+	char* tok;
+	tok = strtok(buff, " ");
+	int i;
+	for( i = 0; tok; i++){
+		str[i] = strdup(tok);
+		tok = strtok(NULL, " ");
+	}
+	return i;
+}
+
+//------------------------------------------------------
 
 //FORMATO : <ref> <size> <price>
 //size_artigos = sizeof(int) + sizeof(short) + sizeof(float) 
@@ -96,6 +120,7 @@ int renameStr(int code, char* new_name)
 	return ref;
 } 
 
+/*
 int twenty(short s, int ns)
 {
 	int res;
@@ -106,6 +131,7 @@ int twenty(short s, int ns)
 		res = 1;
 	return res;
 }
+*/
 
 //Função que faz update da referencia
 void updateRef(int code, int ref, short size)
@@ -115,7 +141,6 @@ void updateRef(int code, int ref, short size)
 		_exit(-1);
 	else
 	{
-		short t;
 		lseek(fd, (code-1) *size_artigos, SEEK_SET);
 		
 		write(fd, &ref, sizeof(int));
@@ -128,38 +153,38 @@ void updateRef(int code, int ref, short size)
 short getSize(int code)
 {
 	short size;
-	int fd = open("artigos", O_WRONLY);
+	int fd = open("artigos", O_RDONLY);
 	if(fd == -1)
-	{
-		perror("Unable to open file");
 		_exit(-1);
-	}
 	else
 	{
 		lseek(fd, (code - 1)*size_artigos, SEEK_SET);  //(code-1) porque os códigos começam no 1
 		lseek(fd, sizeof(int), SEEK_CUR); 
-		write(fd, &size, sizeof(short));
+		read(fd, &size, sizeof(short));
 	}
 	close(fd);
+	return size;
 }
 
-
-
-
-
-//Função que faz parsing de uma linha
-int parse(char* buff, char** str)
+float getPrice(int code)
 {
+	float price;
+	int fd = open("artigos", O_RDONLY);
 
-	char* tok;
-	tok = strtok(buff, " ");
-	int i;
-	for( i = 0; tok; i++){
-		str[i] = strdup(tok);
-		tok = strtok(NULL, " ");
+	if(fd == -1)
+		_exit(-1);
+	else
+	{
+		lseek(fd, (code-1)*10, SEEK_SET);
+		lseek(fd, 4, SEEK_CUR);
+		read(fd, &price, sizeof(float));
+		close(fd);
 	}
-	return i;
+
+	return price;
 }
+
+
 
 /*
 	Função que acrescenta um codigo de artigo ao ficheiro stocks,
@@ -182,21 +207,24 @@ void stockAppend(){
 	
 
 int main(int argc, char *argv[]){
-	char* buff = malloc(40);
+	char* buff = malloc(100);
 	int r ;
 	
-	while( (r = read(0, buff, 39)) ){
-			//wastedSpace();
+	while( (r = readln(0, buff, 100)) ){
 			
-			buff[r+1] = "\0";
+			buff[r+1] = '\0';
 
 			if(buff[0] == 'i')
 			{
-				char** args = malloc(sizeof(char*));
-				
+				char** args = malloc(sizeof(char**));
 				parse(buff, args);
 
-				insertArtigo(args[1], atof(args[2]));
+				int code = insertArtigo(args[1], atof(args[2]));
+
+				char c[100];
+				sprintf(c, "%d\n", code);
+
+				write(1, c, strlen(c));
 
 				stockAppend();
 
@@ -206,11 +234,11 @@ int main(int argc, char *argv[]){
 
 			if(buff[0] == 'n')
 			{
-				char** args = malloc(sizeof(char*));
+				char** args = malloc(sizeof(char**));
 				
 				parse(buff, args);
 
-				int ref = renameStr(args[2]);
+				int ref = renameStr(atoi(args[1]), args[2]);
 				updateRef( atoi(args[1]), ref, (short)strlen(args[2]));
 
 				free(args);
@@ -219,18 +247,19 @@ int main(int argc, char *argv[]){
 			
 			if(buff[0] == 'p') 
 			{
-				char** args = malloc(sizeof(char*));
+				char** args = malloc(sizeof(char**));
 				
 				parse(buff, args);
 				
 				changePrice(atoi(args[1]), atof(args[2]));
+				float p = getPrice(args[1]);
+				printf("%f\n", p);
 				
 				free(args);
 			}
 			
 		}
 		free(buff);
-
 	return 0;
 }
 

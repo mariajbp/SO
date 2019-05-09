@@ -1,28 +1,37 @@
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <fcntl.h>
-#include <string.h>
-#include <signal.h>
-#include "sv.h"
-#include "ma.h"
-
-/*
-NOTAS:
-	->Formato do stock: <quantidade em stock>
-	->Formato das vendas: <código do artigo/index> <quantidade vendida> <montante total>
-	->Nome dos ficheiros: stocks vendas
-	->O SV não envia nada para o stdout nem recebe nada do stdin, apenas dos outros módulos
-*/
+#include "../include/aux.h"
+#include "../include/sv.h"
 
 
+ssize_t readln(int fildes, void* buff, size_t n){ 
+    char c ;
+    size_t s = 0;
+    char* temp = (char *)buff;
 
-//Code size = sizeof(int) = 4 bytes
-//Quantidade size = sizeof(int) = 4 bytes
-// Montante = sizeof(float) = 4 bytes
+    while( s < n && read(fildes, &c, 1) == 1 ){      
+        if(c == '\0')
+        	return s;
+        temp[s++] = c;
+        if(c == '\n')
+        	return s;
+    }
 
+    return s;
+}
+
+//Função que faz parsing de uma linha
+int parse(char* buff, char** str){
+
+	char* tok;
+	tok = strtok(buff, " ");
+	int i;
+
+	for( i = 0; tok ; i++){
+		str[i] = strdup(tok);
+		tok = strtok(NULL, " ");
+	}
+	return i;
+}
+//--------------------------------------------------------------
 
 /*
 	Função que procura um código no ficheiro 
@@ -124,7 +133,7 @@ void vendasAppend(int code, int quant, float mont){
 float getPrice(int code)
 {
 	float price;
-	int fd = open("artigos.txt", O_RDONLY);
+	int fd = open("artigos", O_RDONLY);
 
 	if(fd == -1)
 		_exit(-1);
@@ -176,41 +185,42 @@ void terminar(int signum){
 //«««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««
 
 int main(int argc, char const *argv[]){
-	char** args = malloc(sizeof(char*));
+	char** args = malloc(sizeof(char**));
 	char *c = malloc(100);
 	int r, i;
 
 	signal(SIGINT, terminar);
 	int a = mkfifo("pedidos", 0600);		//pipes para os artigos
 
-	if(a == -1)
-		_exit(-1);
-	else{
-
-		while(1){
-			int fd = open("pedidos", O_RDONLY);
+	while(1){
+		int fd = open("pedidos", O_RDONLY);
 			
-			while( (r = read(fd, c, 99 )) ){
+		while( (r = readln(fd, c, 100 )) ){
 
-				c[r+1] = "\0";
-				i = parse(c,args);
+			c[r-1] = '\0';
+			printf("[%s]\n", c);
+			i = parse(c,args);
+
+			printf("%d\n", i);
 
 				if(i == 2){	
-					char* pid = args[0];
-					int code = atoi(args[1]);
 
+					char* pid = args[0];
+
+					int code = atoi(args[1]);
+					
 					float p = getPrice(code);
 					int q = stocksReadQ(code);
+
+					char *r = malloc(50);
+					int size = sprintf(r, "%f %d\n", p, q);
 					int resp = open(pid, O_WRONLY);
-						if(resp == -1)
-							_exit(-1);
-						else{
-							write(resp, &p, sizeof(float));
-							write(resp, &q, sizeof(int));
-							close(resp);
-						}
+
+						write(resp, r, size);
+						close(resp);
 			 	}
-			 	if(i == 3){
+			 	/*if(i == 3){
+			 			printf("Segundo\n");
 				 		char* pid = args[0];
 						int code = atoi(args[1]);
 						int quant = atoi(args[2]);
@@ -219,7 +229,7 @@ int main(int argc, char const *argv[]){
 			 				stocksWrite(code, quant);
 			 			}
 			 			else{
-			 				makeVenda(code, quant);
+			 				int ns = makeVenda(code, quant);
 							int resp = open(pid, O_WRONLY);
 
 								if(resp == -1)
@@ -229,10 +239,12 @@ int main(int argc, char const *argv[]){
 									close(resp);
 								}
 			 			}
-			 	}
+			 	}*/
 			}
-			close(fd);		
+		close(fd);		
 		}
-	}
+		float p = getPrice(1);
+		printf("%f\n", p);
+	
 	return 0;
 }
