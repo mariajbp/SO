@@ -32,9 +32,6 @@ int parse(char* buff, char** str){
 }
 
 //------------------------------------------------------
-
-//FORMATO : <ref> <size> <price>
-//size_artigos = sizeof(int) + sizeof(short) + sizeof(float) 
 #define size_artigos 10
 
 
@@ -120,18 +117,6 @@ int renameStr(int code, char* new_name)
 	return ref;
 } 
 
-/*
-int twenty(short s, int ns)
-{
-	int res;
-	if((ns*0.2)=>s)
-		res = 0;
-		
-	else
-		res = 1;
-	return res;
-}
-*/
 
 //Função que faz update da referencia
 void updateRef(int code, int ref, short size)
@@ -166,6 +151,7 @@ short getSize(int code)
 	return size;
 }
 
+// Função que recebe um codigo, vai ao ficheiros de artigos e retorna o preço desse artigo
 float getPrice(int code)
 {
 	float price;
@@ -176,14 +162,12 @@ float getPrice(int code)
 	else
 	{
 		lseek(fd, (code-1)*10, SEEK_SET);
-		lseek(fd, 4, SEEK_CUR);
+		lseek(fd, 6, SEEK_CUR);
 		read(fd, &price, sizeof(float));
-		close(fd);
 	}
-
+	close(fd);
 	return price;
 }
-
 
 
 /*
@@ -207,59 +191,69 @@ void stockAppend(){
 	
 
 int main(int argc, char *argv[]){
-	char* buff = malloc(100);
+	char* buff = malloc(150);
 	int r ;
 	
-	while( (r = readln(0, buff, 100)) ){
-			
-			buff[r+1] = '\0';
+	while(1){
+		while( (r = readln(0, buff, 150)) ){
+				
+				buff[r+1] = '\0';
 
-			if(buff[0] == 'i')
-			{
-				char** args = malloc(sizeof(char**));
-				parse(buff, args);
+				if(buff[0] == 'i')
+				{
+					char** args = malloc(sizeof(char**));
+					parse(buff, args);
+					float p = atof(args[2]);
 
-				int code = insertArtigo(args[1], atof(args[2]));
+					if(p > 0){
+						int code = insertArtigo(args[1], atof(args[2]));
 
-				char c[100];
-				sprintf(c, "%d\n", code);
+						char c[150];
+						sprintf(c, "%d\n", code);
 
-				write(1, c, strlen(c));
+						write(1, c, strlen(c));
 
-				stockAppend();
+						stockAppend();
+					}
 
-				free(args);
+					free(args);
+				}
+		
+
+				if(buff[0] == 'n')
+				{
+					char** args = malloc(sizeof(char**));
+					
+					parse(buff, args);
+					int code  = atoi(args[1]);
+
+					if(code > 0){
+						int ref = renameStr(code , args[2]);
+						updateRef( code, ref, (short)strlen(args[2]));
+					}
+
+					free(args);
+					
+				}
+				
+				if(buff[0] == 'p') 
+				{
+					char** args = malloc(sizeof(char**));
+					
+					parse(buff, args);
+					int code  = atoi(args[1]);
+					float p = atof(args[2]);
+					
+					if(code > 0 && p > 0)
+						changePrice(code, p);
+						
+					free(args);
+				}
+				
 			}
+	}
 	
-
-			if(buff[0] == 'n')
-			{
-				char** args = malloc(sizeof(char**));
-				
-				parse(buff, args);
-
-				int ref = renameStr(atoi(args[1]), args[2]);
-				updateRef( atoi(args[1]), ref, (short)strlen(args[2]));
-
-				free(args);
-				
-			}
-			
-			if(buff[0] == 'p') 
-			{
-				char** args = malloc(sizeof(char**));
-				
-				parse(buff, args);
-				
-				changePrice(atoi(args[1]), atof(args[2]));
-				float p = getPrice(args[1]);
-				printf("%f\n", p);
-				
-				free(args);
-			}
-			
-		}
-		free(buff);
+	free(buff);
 	return 0;
 }
 

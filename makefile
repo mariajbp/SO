@@ -2,7 +2,7 @@ INC = include/
 OBJ = src/
 
 objects = $(OBJ)aux.o $(OBJ)ma $(OBJ)sv $(OBJ)cv 
-CFLAGS = -g -Wall -O2
+CFLAGS = -g -Wall -O2 -Wno-unused-result
 CC = gcc
 
 .DEFAULT_GOAL := all

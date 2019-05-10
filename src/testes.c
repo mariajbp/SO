@@ -7,16 +7,30 @@
 #include <fcntl.h>
 
 
-int main(){
+int main(int argc, char const *argv[]){
 
-	FILE* fd = fopen("testes.txt", "w");
-	float f = 0.0;
+	if(argc == 1){
+		FILE* fd = fopen("testesMA.txt", "w");
+		float f = 0.0;
 
-	for(int i = 0; i < 5000; i++){
-		f++;
-		fprintf(fd, "i bola %f\n", f);
+		for(int i = 0; i < 1000000; i++){
+			f++;
+			fprintf(fd, "i bola %f\n", f);
+		}
+
+		fclose(fd);
+		printf("DONE");
 	}
+	else{
+		FILE* fd = fopen("testesCV.txt", "w");
+		int f = 50;
 
-	fclose(fd);
-	printf("DONE");
+		for(int i = 1; i < 1000000; i++){
+			f++;
+			fprintf(fd, "%d %d\n", i, -f);
+		}
+
+		fclose(fd);
+		printf("DONE");
+	}
 }

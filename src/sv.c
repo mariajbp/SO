@@ -31,6 +31,25 @@ int parse(char* buff, char** str){
 	}
 	return i;
 }
+
+// Função que recebe um codigo, vai ao ficheiros de artigos e retorna o preço desse artigo
+float getPrice(int code)
+{
+	float price;
+	int fd = open("artigos", O_RDONLY);
+
+	if(fd == -1)
+		_exit(-1);
+	else
+	{
+		lseek(fd, (code-1)*10, SEEK_SET);
+		lseek(fd, 6, SEEK_CUR);
+		read(fd, &price, sizeof(float));
+	}
+	close(fd);
+	return price;
+}
+
 //--------------------------------------------------------------
 
 /*
@@ -38,8 +57,8 @@ int parse(char* buff, char** str){
  	stocks e escreve a quantidade que foi lida num buffer
 */
 int stocksReadQ(int code){							 	
-	int quant = 0;
-	int r = -1;
+	int quant = -1;
+	
 
 	int fd = open("stocks", O_RDONLY);
 
@@ -49,10 +68,8 @@ int stocksReadQ(int code){
 		//Atualiza o apontador para o local do código + da quantidade
 		lseek(fd, (code-1)*sizeof(int), SEEK_SET);
 		
-		r = read(fd, &quant, sizeof(int));
-			
-		if(r == 0)
-			_exit(-1);
+		read(fd, &quant, sizeof(int));
+		
 	}
 	close(fd);
 	return quant;
@@ -64,25 +81,30 @@ int stocksReadQ(int code){
 	atualiza no ficheiro stocks.
 */
 int stocksWrite(int code, int q){
-	int quant = 0;
+	int quant = -1;
 	int r = -1;
-	int w = -1;
 
-	int fd = open("stocks", O_WRONLY);
+	int fd = open("stocks", O_RDWR);
 
 	if(fd == -1)
 		_exit(-1);
 	else{
 		
 		lseek(fd, (code-1)*sizeof(int), SEEK_SET);
-		r = read(fd, &quant, sizeof(int));
-			
-		if(r == 0)
-			_exit(-1);
+
+		if(q == 0){
+			write(fd, &q, sizeof(int));
+			close(fd);
+			return q;
+		}
 		else{
-			quant += q;
-			lseek(fd, -sizeof(int),SEEK_CUR);
-			w = write(fd, &quant, sizeof(int));
+			r = read(fd, &quant, sizeof(int));
+				
+			if(r > 0){
+				quant += q;
+				lseek(fd, -sizeof(int),SEEK_CUR);
+				write(fd, &quant, sizeof(int));
+			}
 		}
 	}
 	close(fd);
@@ -129,46 +151,26 @@ void vendasAppend(int code, int quant, float mont){
 } 
 
 
-// Função que recebe um codigo, vai ao ficheiros de artigos e retorna o preço desse artigo
-float getPrice(int code)
-{
-	float price;
-	int fd = open("artigos", O_RDONLY);
-
-	if(fd == -1)
-		_exit(-1);
-	else
-	{
-		lseek(fd, (code-1)*10, SEEK_SET);
-		lseek(fd, 4, SEEK_CUR);
-		read(fd, &price, sizeof(float));
-		close(fd);
-	}
-
-	return price;
-}
-
 
 /*
-	Função que realiza uma venda/restock
+	Função que realiza uma venda
 */
 int makeVenda(int code, int quant){
 	
 	int ns;
 	float m;
 
-	if(quant <= stocksReadQ(code)){
+	if( (-quant) <= stocksReadQ(code)){
 		m = calculaMont(code, quant);
 		vendasAppend(code, quant, m);
-		ns = stocksWrite(code, -m);
+		ns = stocksWrite(code, quant);
 	}
 	else{
 		int q = stocksReadQ(code);
 		m = calculaMont(code, q);
 		vendasAppend(code, q, m);
-		ns = stocksWrite(code, -m);
+		ns = stocksWrite(code, 0);
 	}
-
 	return ns;
 }
 
@@ -185,23 +187,20 @@ void terminar(int signum){
 //«««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««
 
 int main(int argc, char const *argv[]){
-	char** args = malloc(sizeof(char**));
 	char *c = malloc(100);
 	int r, i;
 
 	signal(SIGINT, terminar);
-	int a = mkfifo("pedidos", 0600);		//pipes para os artigos
+	mkfifo("pedidos", 0600);		//pipes para os artigos
 
 	while(1){
 		int fd = open("pedidos", O_RDONLY);
 			
-		while( (r = readln(fd, c, 100 )) ){
-
-			c[r-1] = '\0';
-			printf("[%s]\n", c);
+		while( (r = readln(fd, c, 100)) ){
+			
+			char** args = malloc(sizeof(char**));
+			//c[r-1] = '\0';
 			i = parse(c,args);
-
-			printf("%d\n", i);
 
 				if(i == 2){	
 
@@ -209,42 +208,52 @@ int main(int argc, char const *argv[]){
 
 					int code = atoi(args[1]);
 					
-					float p = getPrice(code);
-					int q = stocksReadQ(code);
+					if(code > 0){
+						float p = getPrice(code);
+						int q = stocksReadQ(code);
 
-					char *r = malloc(50);
-					int size = sprintf(r, "%f %d\n", p, q);
-					int resp = open(pid, O_WRONLY);
+						char *r = malloc(50);
+						int size = sprintf(r, " %d %f\n", q, p);
+						int resp = open(pid, O_WRONLY);
 
-						write(resp, r, size);
-						close(resp);
+							write(resp, r, size);
+							close(resp);
+						free(r);
+					}
 			 	}
-			 	/*if(i == 3){
-			 			printf("Segundo\n");
+			 	if(i == 3){
+			 			
+			 			int ns = 0;
 				 		char* pid = args[0];
 						int code = atoi(args[1]);
 						int quant = atoi(args[2]);
 
-			 			if(quant > 0){
-			 				stocksWrite(code, quant);
-			 			}
-			 			else{
-			 				int ns = makeVenda(code, quant);
-							int resp = open(pid, O_WRONLY);
+						if(code > 0){
+				 			if(quant >= 0){
+				 				ns = stocksWrite(code, quant);
+				 			}
+				 			else{
+				 			 	ns = makeVenda(code, quant);	
+				 			}
 
-								if(resp == -1)
-									_exit(-1);
-								else{
-									write(resp, &ns, sizeof(int));
-									close(resp);
-								}
-			 			}
-			 	}*/
-			}
-		close(fd);		
+					 		char *r = malloc(50);
+					 		int size = sprintf(r, "CODE: %d %d\n", code, ns);
+							
+					 		int resp = open(pid, O_WRONLY);
+							
+								write(resp, r, size);
+								close(resp);
+							free(r);
+						}
+			 	}
+			 	free(args);
+			 	printf("CODE: %d\n", atoi(args[1]));
+			 	perror(" ");
 		}
-		float p = getPrice(1);
-		printf("%f\n", p);
-	
+
+	close(fd);		
+	}
+
+	free(c);
 	return 0;
 }
