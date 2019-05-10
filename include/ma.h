@@ -17,7 +17,7 @@ int insertString(char* name, short size);
 
 /**
  * Função que insere um artigo no ficheiro artigos.txt
- * @param nome do artigo
+ * @param nome do ficheiro a escrever
  * @param preço do artigo
  * @returns código do artigo
  */
@@ -26,15 +26,15 @@ int insertArtigo(char* name, float price);
 
 /**
  * Função que dado o código do artigo e um novo preço, altera o seu preço atual
- * @param nome do artigo
+ * @param codigo do artigo
  * @param novo preço do artigo
  */
 void changePrice(int code, float newp);
 
 /**
  * Função que dado o código do artigo e um novo nome, altera o seu nome atual
- * @param nome do artigo
- * @param novo preço do artigo
+ * @param codigo do artigo
+ * @param novo nome do artigo
  * @returns referencia do artigo no ficheiro strings
  */
 int renameStr(int code, char* new_name);
