@@ -226,7 +226,7 @@ int main(int argc, char *argv[]){
 					
 					parse(buff, args);
 					int code  = atoi(args[1]);
-					printf("%s", args[2]);
+					
 
 					if(code > 0){
 						int ref = renameStr(code , args[2]);
