@@ -8,39 +8,62 @@
 
 /**
  * Função que escreve o nome de um artigo no ficheiro strings.txt
- * @param nome e tamanho do nome a escrever
- * @param referencia do artigo inserido
+ * @param nome a escrever no ficheiro
+ * @param tamanho do nome a escrever no ficheiro
+ * @returns referencia do artigo inserido
  */
 
 int insertString(char* name, short size);
 
 /**
  * Função que insere um artigo no ficheiro artigos.txt
- * @param nome e preço do artigo
+ * @param nome do artigo
+ * @param preço do artigo
+ * @returns código do artigo
  */
 int insertArtigo(char* name, float price);
 
 
 /**
  * Função que dado o código do artigo e um novo preço, altera o seu preço atual
- * @param código e preço atual de um artigo
- * @param novo preço de um artigo
+ * @param nome do artigo
+ * @param novo preço do artigo
  */
 void changePrice(int code, float newp);
 
 /**
  * Função que dado o código do artigo e um novo nome, altera o seu nome atual
- * @param código e novo nome de um artigo
+ * @param nome do artigo
+ * @param novo preço do artigo
+ * @returns referencia do artigo no ficheiro strings
  */
-int renameStr(int code, char* new_name);
+int renameStr(char* new_name);
 
 /**
  * Função que dado o código do artigo e uma nova referencia, atualiza a referencia
- * @param código e referencia de um artigo
+ * @param código de um artigo
+ * @param referencia de um artigo
+ * @param tamanho do nome do artigo
  */
 void updateRef(int code, int ref, short size);
 
+/**
+ * Função que devolve o tamanho do nome de um artigo
+ * @param código de um artigo
+ * @returns tamanho do nome do artigo
+ */
+short getSize(int code);
 
+/**
+ * Função que dado o código do artigo retorna o seu preço
+ * @param código do artigo
+ * @returns preço do artigo
+ */
+float getPrice(int code);
 
+/**
+ * Função que acrescenta um codigo de artigo ao ficheiro stocks
+ */
+void stockAppend();
 
 #endif

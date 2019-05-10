@@ -2,9 +2,15 @@
 #define __AG_H__
 
 /**
- * O QUE FAZ
- * @param O QUE RECEBE
- * @param O QUE RETORNA
+ * Função que agrega um ficheiro de vendas
+ * @param nome do ultimo ficheiro agregado
  */
+void agregar(char* filename);
+
+/**
+ * Função que escreve os dados agregados para um novo ficheiro
+ * @param nome do ultimo ficheiro agregado
+ */
+void wrToFile(char* oldfile);
 
 #endif
