@@ -37,7 +37,7 @@ void changePrice(int code, float newp);
  * @param novo preço do artigo
  * @returns referencia do artigo no ficheiro strings
  */
-int renameStr(char* new_name);
+int renameStr(int code, char* new_name);
 
 /**
  * Função que dado o código do artigo e uma nova referencia, atualiza a referencia
