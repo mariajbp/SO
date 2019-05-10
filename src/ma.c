@@ -194,7 +194,7 @@ int main(int argc, char *argv[]){
 	char* buff = malloc(150);
 	int r ;
 	
-	while(1){
+
 		while( (r = readln(0, buff, 150)) ){
 				
 				buff[r+1] = '\0';
@@ -251,7 +251,7 @@ int main(int argc, char *argv[]){
 				}
 				
 			}
-	}
+	
 	
 	free(buff);
 	return 0;

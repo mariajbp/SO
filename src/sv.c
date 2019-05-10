@@ -217,6 +217,9 @@ int main(int argc, char const *argv[]){
 						int size = sprintf(r, " %d %f\n", q, p);
 						int resp = open(pid, O_WRONLY);
 
+						if(resp < 0)
+							_exit(-1);
+
 							write(resp, r, size);
 							close(resp);
 						free(r);
@@ -238,18 +241,22 @@ int main(int argc, char const *argv[]){
 				 			}
 
 					 		char *r = malloc(50);
-					 		int size = sprintf(r, "CODE: %d %d\n", code, ns);
+					 		int size = sprintf(r, "%d %d\n", code, ns);
 							
 					 		int resp = open(pid, O_WRONLY);
-							
-								write(resp, r, size);
-								close(resp);
+					 		
+					 		if(resp < 0)
+								_exit(-1);
+
+							write(resp, r, size);
+
+							close(resp);
 							free(r);
 						}
 			 	}
 			 	free(args);
-			 	printf("CODE: %d\n", atoi(args[1]));
-			 	perror(" ");
+			 	//printf("CODE: %d\n", atoi(args[1]));
+			 	//perror(" ");
 		}
 
 	close(fd);		
