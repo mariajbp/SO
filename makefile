@@ -2,6 +2,7 @@ INC = include/
 OBJ = src/
 
 objects = $(OBJ)aux.o $(OBJ)ma $(OBJ)sv $(OBJ)cv 
+files = $(OBJ)artigos $(OBJ)stocks $(OBJ)strings $(OBJ)vendas
 CFLAGS = -g -Wall -O2 -Wno-unused-result
 CC = gcc
 
@@ -17,4 +18,4 @@ aux.o : $(INC)aux.h
 
 .PHONY : clean
 clean : 
-	rm  $(objects)
+	rm  $(objects) $(files)
