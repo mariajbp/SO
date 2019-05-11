@@ -44,7 +44,7 @@ int agregacao_simples(char* filename, char* new_file, int init, int fim)
 					else lseek(fd, sizeof(int) + sizeof(float), SEEK_CUR);
 					i += (2*sizeof(int) + sizeof(float)) - 1;
 				}
-				lseek(fd, i + sizeof(int) + sizeof(float), SEEK_SET);
+				lseek(fd, num_linhas + 2*sizeof(int) + sizeof(float), SEEK_SET);
 				
 				write(n_fd, &cod, sizeof(int));
 				write(n_fd, &quantidade, sizeof(int));
@@ -68,11 +68,11 @@ int main(){
 	double cpu_time_used;
 	start = clock();
 
-	int fd = open("vendas_0_1", O_RDONLY);
+	int fd = open("vendas_0_3", O_RDONLY);
 	int size = lseek(fd, 0, SEEK_END); // determina o tamanho do ficheiro a partir de onde se quer começar
 	close(fd);
 
-	agregacao_simples("vendas_0_1", "vendas_1_1", 0, size);
+	agregacao_simples("vendas_0_3", "vendas_1_3", 0, size);
 
 	end = clock();
 	cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;

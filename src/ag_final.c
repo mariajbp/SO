@@ -127,21 +127,18 @@ void split_work(char* filename, char* new_file, int init)
 	close(fd);
 	
 	printf("size : %d\n", size);
-	if (size < 1000) num = 10;
-	else num = size % 1000;
+	if (size < 10000) num = 50;
+	else num = size % 100;
 
 	printf("vou fazer %d forks\n", num );
-	for (int i = 0; i < size; i += x*(size/num) )
+	for (int i = 0; i <= size; i += x*(size/num) )
 	{
 		if(!fork())
 		{
 			agregacao_simples(filename, y, i);
-
 			_exit(1);
 		}
-
 		y = i;
-		x++;
 	}
 
 	for (int i = 0; i <= num; i++)
