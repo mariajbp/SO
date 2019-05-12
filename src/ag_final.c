@@ -6,17 +6,29 @@
 #include <time.h>
 
 
-int append_file(char* f1, char* f2){
-	int fd_1 = open(f1, O_WRONLY, 0644);
-	int fd_2 = open(f2, O_RDONLY, 0644);
+int append_file(char* head, char* tail){
+
+	int cod, quantidade, montante;
+	int fd_1 = open(head, O_WRONLY, 0644);
+	int fd_2 = open(tail, O_RDONLY, 0644);
 
 	int size1 = lseek(fd_1, 0, SEEK_END); // determina o tamanho do ficheiro 1
 	int size2 = lseek(fd_2, 0, SEEK_END); // determina o tamanho do ficheiro 2
 
-	char* lido = malloc(size2);
+	lseek(fd_2, 0, SEEK_SET);
 
-	read(fd_2, lido, size2);
-	write(fd_1, lido, size2);
+	for (int i = 0; i < size2; i++)
+	{
+		read(fd_2, &cod, sizeof(int));
+		read(fd_2, &quantidade, sizeof(int));
+		read(fd_2, &montante, sizeof(float));
+		
+		write(fd_1, &cod, sizeof(int));
+		write(fd_1, &quantidade, sizeof(int));
+		write(fd_1, &montante, sizeof(float));
+
+		i += (2*sizeof(int) + sizeof(float)) - 1;
+	}
 
 	close(fd_1);
 	close(fd_2);
@@ -96,7 +108,7 @@ void agregacao_final(char* filename, char* new_file, int init, int fim, int num)
 {
 	int x, c, cod, quantidade, montante, q, m;
 	int fd = open(filename, O_RDWR, 0644);
-	int n_fd = open(new_file, O_WRONLY, 0644);
+	int n_fd = open(new_file, O_WRONLY | O_CREAT, 0644);
 
 	if(fd == -1)
 		_exit(-1);
@@ -143,7 +155,7 @@ void agregacao_final(char* filename, char* new_file, int init, int fim, int num)
 			else lseek(fd, sizeof(int) + sizeof(float), SEEK_CUR);
 			
 			j += (2*sizeof(int) + sizeof(float)) - 1;
-			printf("%d / %d . final\n", j/12, fim/12);
+			if((j/12) % 200 == 0) printf("%d / %d (%d) . final\n", j/12, fim/12, fim);
 		}
 	}
 
@@ -163,34 +175,36 @@ void split_work(char* filename, char* new_file, int init)
 	
 	int fdi = open("file_intermedio", O_RDWR | O_CREAT);
 
-	if (size < 10000) num = 20;
-	else num = size % 60;
+	if (size < 10000) num = 2;
+	else num = size % 10;
 
 	printf("size %d, vou fazer %d forks\n", size, num);
 	for (int i = 0; i <= size; i += (size/num) )
 	{
-		if(!fork())
-		{
-			nome_pid = creat_file(getpid());
-			agregacao_simples(filename, nome_pid, y, i);
-			_exit(1);
+		if(!(y == 0 && i == 0)){
+			if(!fork())
+			{
+				nome_pid = creat_file(getpid());
+				agregacao_simples(filename, nome_pid, y, i);
+				_exit(1);
+			}
+			y = i;
 		}
-		y = i;
 	}
-	for (int i = 0; i < num; i++)
+	for (int i = 0; i <= num; i++)
 		if((pid = wait(&status)) != -1){
 			sprintf(nome_pid, "%d", pid);
 			printf("\t%d . .", append_file("file_intermedio", nome_pid));
-			// delete file nome_pid
-			printf("\tacabei um fork %d\n", i);
+			remove(nome_pid);
+			printf("\tacabei um fork %d, apaguei o %s\n", i, nome_pid);
 		}
 
 	printf("vou agregar tudo\n");
 
-	//agregacao_final("file_intermedio", new_file, 0, size, num);
+	agregacao_final("file_intermedio", new_file, 0, lseek(fdi, 0, SEEK_END), num);
 
-	close(fd_i);
-	printf("acabei\n");
+	close(fdi);
+	remove("file_intermedio");
 }
 
 
@@ -200,11 +214,11 @@ int main(){
 	double cpu_time_used;
 	start = clock();
 
-	split_work("vendas_0_2", "vendas_1_2", 0);
+	split_work("vendas_in", "vendas_out", 0);
 
 	end = clock();
 	cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-	printf("CPU Time:%f\n", cpu_time_used );
+	printf("\n\n\tCPU Time:%f\n\n", cpu_time_used );
 
 	return 0;
 }
