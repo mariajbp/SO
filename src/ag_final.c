@@ -7,19 +7,28 @@
 
 
 int append_file(char* head, char* tail){
+
+	int cod, quantidade, montante;
 	int fd_1 = open(head, O_WRONLY, 0644);
 	int fd_2 = open(tail, O_RDONLY, 0644);
 
 	int size1 = lseek(fd_1, 0, SEEK_END); // determina o tamanho do ficheiro 1
 	int size2 = lseek(fd_2, 0, SEEK_END); // determina o tamanho do ficheiro 2
 
-	char* lido = malloc(size2);
-
-	lseek(fd_1, 0, SEEK_SET);
 	lseek(fd_2, 0, SEEK_SET);
 
-	read(fd_2, lido, size2);
-	write(fd_1, lido, size2);
+	for (int i = 0; i < size2; i++)
+	{
+		read(fd_2, &cod, sizeof(int));
+		read(fd_2, &quantidade, sizeof(int));
+		read(fd_2, &montante, sizeof(float));
+		
+		write(fd_1, &cod, sizeof(int));
+		write(fd_1, &quantidade, sizeof(int));
+		write(fd_1, &montante, sizeof(float));
+
+		i += (2*sizeof(int) + sizeof(float)) - 1;
+	}
 
 	close(fd_1);
 	close(fd_2);
@@ -146,7 +155,7 @@ void agregacao_final(char* filename, char* new_file, int init, int fim, int num)
 			else lseek(fd, sizeof(int) + sizeof(float), SEEK_CUR);
 			
 			j += (2*sizeof(int) + sizeof(float)) - 1;
-			if((j/12) % 100 == 0) printf("%d / %d (%d) . final\n", j/12, fim/12, fim);
+			if((j/12) % 200 == 0) printf("%d / %d (%d) . final\n", j/12, fim/12, fim);
 		}
 	}
 
@@ -166,8 +175,8 @@ void split_work(char* filename, char* new_file, int init)
 	
 	int fdi = open("file_intermedio", O_RDWR | O_CREAT);
 
-	if (size < 100000) num = 10;
-	else num = size % 50;
+	if (size < 10000) num = 2;
+	else num = size % 10;
 
 	printf("size %d, vou fazer %d forks\n", size, num);
 	for (int i = 0; i <= size; i += (size/num) )
