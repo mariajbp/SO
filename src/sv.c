@@ -47,7 +47,7 @@ float getPrice(int code)
 		_exit(-1);
 	else
 	{
-		lseek(fd, (code-1)*10, SEEK_SET);
+		lseek(fd, (code-1)*(sizeof(int)+sizeof(short)+sizeof(float)), SEEK_SET);
 		lseek(fd, 6, SEEK_CUR);
 		read(fd, &price, sizeof(float));
 	}
@@ -124,16 +124,11 @@ int stocksWrite(int code, int q){
 */
 float calculaMont(int code, int quant){
 	float price = -1.0;
-	int fd = open("artigos", O_RDONLY);
 
-	if(fd == -1)
-			_exit(-1);
-	else{
-		lseek(fd, (code-1)*(sizeof(int)+sizeof(short)) , SEEK_SET);
-		read(fd, &price, sizeof(float));
-		price*=quant;
-	}
-	close(fd);
+	price = getPrice(code);
+	printf("price: %f\n", price);
+	price*=quant;
+	
 	return price;
 }
 
@@ -170,15 +165,17 @@ int makeVenda(int code, int quant){
 	float m;
 
 	if( (-quant) <= stocksReadQ(code)){
-		m = calculaMont(code, quant);
-		vendasAppend(code, quant, m);
+		m = calculaMont(code,(-quant));
+		printf("%f\n", m);
+		vendasAppend(code, -quant, m);
 		ns = stocksWrite(code, quant);
 	}
 	else{
 		int q = stocksReadQ(code);
-		m = calculaMont(code, q);
-		vendasAppend(code, q, m);
+		m = calculaMont(code, -q);
+		vendasAppend(code, -q, m);
 		ns = stocksWrite(code, 0);
+
 	}
 	return ns;
 }
@@ -217,15 +214,18 @@ int validaInputCV(char** args, int i){
 void printVenda(){
 
 	int fd = open("vendas", O_RDONLY);
-	int c, q, m;
-	lseek(fd, 0, SEEK_END);
+	int c, q;
+	float m;
+	lseek(fd, -(sizeof(int)*2 + sizeof(float)), SEEK_END);
 	read(fd, &c, sizeof(int));
 	read(fd, &q, sizeof(int));
 	read(fd, &m, sizeof(float));
 
 	close(fd);
-
-	printf("%d %d %d", c, q, m);
+	char buff[50];
+	sprintf(buff, "%d %d %f", c, q, m);
+	printf("%s\n", buff);
+	
 
 }
 //«««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««
@@ -283,6 +283,7 @@ int main(int argc, char const *argv[]){
 					 			}
 					 			else{
 					 			 	ns = makeVenda(code, quant);
+					 			 	printf("%d %d\n", code, quant);
 					 			 	printVenda();
 					 			}
 

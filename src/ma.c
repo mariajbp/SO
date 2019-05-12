@@ -176,25 +176,6 @@ short getSize(int code)
 	return size;
 }
 
-// Função que recebe um codigo, vai ao ficheiros de artigos e retorna o preço desse artigo
-float getPrice(int code)
-{
-	float price;
-	int fd = open("artigos", O_RDONLY);
-
-	if(fd == -1)
-		_exit(-1);
-	else
-	{
-		lseek(fd, (code-1)*10, SEEK_SET);
-		lseek(fd, 6, SEEK_CUR);
-		int r = read(fd, &price, sizeof(float));
-		if(r == 0)
-			_exit(0);
-	}
-	close(fd);
-	return price;
-}
 
 
 /*
@@ -296,7 +277,7 @@ int renameTemp(){
 
 /*
 int validaInputMA(char** args){
-
+	
 
 }*/
 
@@ -315,7 +296,7 @@ int main(int argc, char *argv[]){
 					float p = atof(args[2]);
 
 					if(p > 0){
-						int code = insertArtigo(args[1], atof(args[2]));
+						int code = insertArtigo(args[1], p);
 
 						char c[150];
 						sprintf(c, "%d\n", code);
@@ -345,7 +326,6 @@ int main(int argc, char *argv[]){
 
 					free(args);
 
-					//Ver os 20%
 					if( twenty() ){
 						
 						clearTrash();
