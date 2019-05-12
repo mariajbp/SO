@@ -11,16 +11,15 @@ int main(int argc, char const *argv[]){
 
 	if(argc == 1){
 		FILE* fd = fopen("testesMA.txt", "w");
-		float f = 0.0;
-		int i , c = 0;
+		float f = 100;
+		int i;
 
-		for(i = 0; i < 5000; i++){
-			f++;
+		for(i = 0; i < 100000; i++){
+			f+=200;
 			fprintf(fd, "i bola %f\n", f);
 		}
-		for(i = 0; i < 20; i++){
-			c+= 200;
-			fprintf(fd, "n %d quadrado\n", c);
+		for(i = 0; i <= 40000; i++){
+			fprintf(fd, "n %d quadrado\n", i);
 		}
 
 
@@ -31,7 +30,7 @@ int main(int argc, char const *argv[]){
 		FILE* fd = fopen("testesCV.txt", "w");
 		int f = 50;
 
-		for(int i = 1; i < 5000; i++){
+		for(int i = 1; i < 50000; i++){
 			f++;
 			fprintf(fd, "%d %d\n", i, -f);
 		}

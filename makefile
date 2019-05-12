@@ -10,6 +10,7 @@ CC = gcc
 
 all: $(objects) 
 
+#ag: $(INC)aux.h $(INC)ag.h
 sv : $(INC)aux.h $(INC)sv.h
 cv : $(INC)aux.h $(INC)cv.h
 ma : $(INC)ma.h  $(INC)aux.h 

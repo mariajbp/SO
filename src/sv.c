@@ -3,17 +3,22 @@
 
 
 ssize_t readln(int fildes, void* buff, size_t n){ 
-    char c ;
-    size_t s = 0;
+    char c = ' ';
+    size_t s = 0, r = 1;
     char* temp = (char *)buff;
 
-    while( s < n && read(fildes, &c, 1) == 1 ){      
-        if(c == '\0')
-        	return s;
-        temp[s++] = c;
-        if(c == '\n')
-        	return s;
+    while( (s < n) && r && (c != '\n')){  
+
+    	r = read(fildes, &c, 1);
+
+        if(r && (c != '\n')){
+        	temp[s] = c;
+        	s++;
+        }
     }
+    temp[s] = 0;
+    if(s == 0 && temp[s] == '\n')
+    	return -1;
 
     return s;
 }
@@ -68,7 +73,8 @@ int stocksReadQ(int code){
 		//Atualiza o apontador para o local do código + da quantidade
 		lseek(fd, (code-1)*sizeof(int), SEEK_SET);
 		
-		read(fd, &quant, sizeof(int));
+		if( (read(fd, &quant, sizeof(int))) == 0)
+			_exit(-1);
 		
 	}
 	close(fd);
@@ -104,6 +110,9 @@ int stocksWrite(int code, int q){
 				quant += q;
 				lseek(fd, -sizeof(int),SEEK_CUR);
 				write(fd, &quant, sizeof(int));
+			}
+			else{
+				_exit(-1);
 			}
 		}
 	}
@@ -184,6 +193,41 @@ void terminar(int signum){
 }
 
 
+
+
+/*
+	Função que valida o input 
+*/
+int validaInputCV(char** args, int i){
+
+	int r = 0;
+	if(i <= 1 || i > 3)
+		return r;
+	if(i == 2){
+		if ( atoi(args[0]) && atoi(args[1]) )
+			r = 1;
+	}
+	if(i == 3){
+		if( atoi(args[0]) && atoi(args[1]) && atoi(args[2]))
+			r = 1;
+	}
+	return r;
+}
+
+void printVenda(){
+
+	int fd = open("vendas", O_RDONLY);
+	int c, q, m;
+	lseek(fd, 0, SEEK_END);
+	read(fd, &c, sizeof(int));
+	read(fd, &q, sizeof(int));
+	read(fd, &m, sizeof(float));
+
+	close(fd);
+
+	printf("%d %d %d", c, q, m);
+
+}
 //«««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««
 
 int main(int argc, char const *argv[]){
@@ -196,72 +240,84 @@ int main(int argc, char const *argv[]){
 
 	while(1){
 		int fd = open("pedidos", O_RDONLY);
+
 			
-		while( (r = readln(fd, c, 100)) ){
-			
-			char** args = malloc(sizeof(char**));
-			//c[r-1] = '\0';
-			i = parse(c,args);
+			while( (r = readln(fd, c, 100)) ){
+				
+				char** args = malloc(sizeof(char**));
+				i = parse(c,args);
 
-				if(i == 2){	
-
-					char* pid = args[0];
-
-					int code = atoi(args[1]);
+				if( validaInputCV(args, i)){
 					
-					if(code > 0){
-						float p = getPrice(code);
-						int q = stocksReadQ(code);
+					if(i == 2){	
 
-						char *r = malloc(50);
-						int size = sprintf(r, " %d %f\n", q, p);
-						int resp = open(pid, O_WRONLY);
-
-						if(resp < 0)
-							_exit(-1);
-
-							write(resp, r, size);
-							close(resp);
-						free(r);
-					}
-			 	}
-			 	if(i == 3){
-			 			
-			 			int ns = 0;
-				 		char* pid = args[0];
+						char* pid = args[0];
 						int code = atoi(args[1]);
-						int quant = atoi(args[2]);
-
+						
 						if(code > 0){
-				 			if(quant >= 0){
-				 				ns = stocksWrite(code, quant);
-				 			}
-				 			else{
-				 			 	ns = makeVenda(code, quant);	
-				 			}
+							float p = getPrice(code);
+							int q = stocksReadQ(code);
 
-					 		char *r = malloc(50);
-					 		int size = sprintf(r, "%d %d\n", code, ns);
-							
-					 		int resp = open(pid, O_WRONLY);
-					 		
-					 		if(resp < 0)
+							char *r = malloc(50);
+							int size = sprintf(r, "%d %f\n", q, p);
+							int resp = open(pid, O_WRONLY);
+
+							if(resp < 0)
 								_exit(-1);
 
-							write(resp, r, size);
-
-							close(resp);
+								write(resp, r, size);
+								close(resp);
 							free(r);
 						}
-			 	}
-			 	free(args);
-			 	//printf("CODE: %d\n", atoi(args[1]));
-			 	//perror(" ");
-		}
+				 	}
+				 	if(i == 3){
+				 			
+				 			int ns = 0;
+					 		char* pid = args[0];
+							int code = atoi(args[1]);
+							int quant = atoi(args[2]);
 
-	close(fd);		
+							if(code > 0){
+					 			if(quant >= 0){
+					 				ns = stocksWrite(code, quant);
+					 			}
+					 			else{
+					 			 	ns = makeVenda(code, quant);
+					 			 	printVenda();
+					 			}
+
+						 		char *r = malloc(50);
+						 		int size = sprintf(r, "%d\n", ns);
+								
+						 		int resp = open(pid, O_WRONLY);
+						 		
+						 		if(resp < 0)
+									_exit(-1);
+
+								write(resp, r, size);
+
+								close(resp);
+								free(r);
+							}
+				 	}
+				}
+				else{
+					char* pid = args[0];
+					int resp = open(pid, O_WRONLY);
+						 		
+						 		if(resp < 0)
+									_exit(-1);
+
+								write(resp, "i", 1);
+
+								close(resp);
+				}
+				free(args);
+
+			}
+		close(fd);	
 	}
+	free(c);		
 
-	free(c);
 	return 0;
 }
