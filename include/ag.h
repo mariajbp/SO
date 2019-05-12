@@ -1,16 +1,13 @@
 #ifndef __AG_H__
 #define __AG_H__
 
-/**
- * Função que agrega um ficheiro de vendas
- * @param nome do ultimo ficheiro agregado
- */
-void agregar(char* filename);
+#include <fcntl.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <time.h>
 
-/**
- * Função que escreve os dados agregados para um novo ficheiro
- * @param nome do ultimo ficheiro agregado
- */
-void wrToFile(char* oldfile);
+
 
 #endif

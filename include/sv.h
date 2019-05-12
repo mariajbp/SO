@@ -1,6 +1,18 @@
 #ifndef __SV_H__
 #define __SV_H__
 
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/stat.h>
+#include <string.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <fcntl.h>
+#include <signal.h>
+#include <ctype.h>
+#include <time.h>
+
 /**
  * Função que procura um código no ficheiro stocks 
  * @param código de um artigo

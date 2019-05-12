@@ -1,6 +1,4 @@
-#include "../include/aux.h"
 #include "../include/ma.h" 
-
 
 
 ssize_t readln(int fildes, void* buff, size_t n){ 
@@ -37,8 +35,6 @@ int parse(char* buff, char** str){
 	return i;
 }
 
-//------------------------------------------------------
-#define size_artigos 10
 
 
 /*
@@ -166,11 +162,9 @@ short getSize(int code)
 		_exit(-1);
 	else
 	{
-		lseek(fd, (code - 1)*size_artigos, SEEK_SET);  //(code-1) porque os códigos começam no 1
+		lseek(fd, (code - 1)*size_artigos, SEEK_SET); 
 		lseek(fd, sizeof(int), SEEK_CUR); 
-		int r = read(fd, &size, sizeof(short));
-		if(r == 0)
-			_exit(0);
+		read(fd, &size, sizeof(short));
 	}
 	close(fd);
 	return size;
@@ -184,14 +178,13 @@ short getSize(int code)
 */
 void stockAppend(){
 	int q = 0;
-	int w = -1;
-	int fd = open("stocks", O_WRONLY | O_CREAT,0664);
+	int fd = open("stocks", O_WRONLY | O_CREAT, 0664);
 
 	if(fd == -1)
 		_exit(-1);
 	else{
 		lseek(fd, 0, SEEK_END);
-		w += write(fd, &q, sizeof(int) );
+		write(fd, &q, sizeof(int));
 	}
 	close(fd);
 }
@@ -201,18 +194,24 @@ int twenty()
 {
 	int res = 0, lixo, fd;
 	fd = open("strings", O_RDONLY);
-	read(fd, &lixo, sizeof(int));
-	lseek(fd, -sizeof(int), SEEK_CUR);
-	int fsize = lseek(fd, 0, SEEK_END);
-	close(fd);
 
-	if( lixo >= (fsize*0.2) )
-		return 1;	
+	if(fd == -1)
+		_exit(-1);
+	else{
+		int fsize = lseek(fd, 0, SEEK_END);
+		lseek(fd, 0, SEEK_SET);
+		read(fd, &lixo, sizeof(int));
+
+		close(fd);
+
+		if( lixo >= (fsize*0.2) )
+			return 1;	
+	}
 
 	return res;
 }
 
-//	
+//	Função que limpa o lixo
 void clearTrash()
 {
 	int fd, fs, fa, code, ref, lixo = 0;
@@ -220,28 +219,32 @@ void clearTrash()
 	
 	//Ficheiro temporário das strings
 	fd = open("temp", O_CREAT | O_WRONLY, 0644);
+	if(fd == -1)
+		_exit(-1);
 	int w = write(fd, &lixo, sizeof(int));
 
 	//Calcular o número de códigos totais
 	fa = open("artigos", O_RDONLY);
+	if(fa == -1)
+		_exit(-1);
 	int codeT = lseek(fa, 0, SEEK_END);
 	codeT = codeT/(size_artigos);
 	close(fa);
 
 	//Copiar para o ficheiro temporário
 	fs = open("strings", O_RDONLY);
+	if(fd == -1)
+		_exit(-1);
 	for(code = 1; code <= codeT; code++){
 			//Get ref e get size no ficheiro artigos
 			fa = open("artigos", O_RDONLY);
+			if(fa == -1)
+				_exit(-1);
 			lseek(fa, (code-1)*size_artigos, SEEK_SET);
 			read(fa, &ref, sizeof(int));
 			read(fa, &size, sizeof(short));
 			close(fa);
 
-			/*
-			getRef
-			getSize
-			*/
 			//Get line no ficheiro strings
 			lseek(fs, ref, SEEK_SET);
 			char* line = malloc(size);
@@ -261,8 +264,8 @@ void clearTrash()
 	
 }
 
+//Função que faz rename do tempo para strings
 int renameTemp(){
-	
 	int pid;
 	int status;
 	if(!(pid = fork())){
@@ -272,7 +275,6 @@ int renameTemp(){
 	wait(&status);
 
 	return WIFEXITED(status);
-	
 }
 
 /*
@@ -285,16 +287,19 @@ int main(int argc, char *argv[]){
 	char* buff = malloc(150);
 	int r ;
 
-	/*
-		if(argc == 2)
-			if(!(strcmp(argv[1], "a"))
-				fork/exec
-					exec(sv, sv, a,NULL)
-				wait
-				return
+	
+	if(argc == 2){
+		int status;
+		if( !(strcmp(argv[1], "a")) )
+			if( !(fork()) ){
+				printf("Ma chamou Sv\n");
+				execlp("sv", "sv", "a", NULL);
+			}
+			wait(&status);
+			return 0;
+	}
 		
 
-	*/
 		while( (r = readln(0, buff, 150)) ){
 				
 				//buff[r-1] = '\0';

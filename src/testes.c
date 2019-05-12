@@ -30,7 +30,7 @@ int main(int argc, char const *argv[]){
 		FILE* fd = fopen("testesCV.txt", "w");
 		int f = 50;
 
-		for(int i = 1; i < 50000; i++){
+		for(int i = 1; i < 5000; i++){
 			f++;
 			fprintf(fd, "%d %d\n", i, -f);
 		}

@@ -1,9 +1,19 @@
 #ifndef __MA_H__
 #define __MA_H__
 
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/stat.h>
+#include <string.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <fcntl.h>
+#include <signal.h>
+#include <ctype.h>
+#include <time.h>
 
-//FORMATO : <ref> <size> <price>
-//size_artigos = sizeof(int) + sizeof(short) + sizeof(float) 
+
 #define size_artigos 10
 
 /**

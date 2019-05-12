@@ -1,4 +1,4 @@
-#include "../include/aux.h"
+#include "../include/cv.h"
 
 
 ssize_t readln(int fildes, void* buff, size_t n){ 

@@ -1,4 +1,3 @@
-#include "../include/aux.h"
 #include "../include/sv.h"
 
 
@@ -55,7 +54,6 @@ float getPrice(int code)
 	return price;
 }
 
-//--------------------------------------------------------------
 
 /*
 	Função que procura um código no ficheiro 
@@ -236,19 +234,30 @@ int main(int argc, char const *argv[]){
 
 	signal(SIGINT, terminar);
 
-	/*
-		if(argc == 2)
-			if( !(strcmp(argv[1], "a"))
-				fork/exec
-					int fd = open(vendas)
-					dup2(fd, STDIN)
-					close(fd)
-					exec(ag, ag, (nome com data), NULL)
-				wait
-				return
+	
+		if(argc == 2){
+			int status;
+			if( !(strcmp(argv[1], "a")) )
+				if( !(fork()) ){
+					time_t t;
+					struct tm *info;
+
+					time(&t);
+
+					char* date = malloc(17);
+					strftime(date, 17, "%d_%m_%y_%X", info);
+					printf("%s\n", date);
+					int fd = open("vendas", O_RDONLY);
+					dup2(fd, STDIN_FILENO);
+					close(fd);
+
+					execlp("ag", "ag", "vendas", date, NULL);
+				}
+				wait(&status);
+				return 0;
+		}
 		
 
-	*/
 
 	mkfifo("pedidos", 0600);		//pipes para os artigos
 
