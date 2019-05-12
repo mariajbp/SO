@@ -285,6 +285,16 @@ int main(int argc, char *argv[]){
 	char* buff = malloc(150);
 	int r ;
 
+	/*
+		if(argc == 2)
+			if(!(strcmp(argv[1], "a"))
+				fork/exec
+					exec(sv, sv, a,NULL)
+				wait
+				return
+		
+
+	*/
 		while( (r = readln(0, buff, 150)) ){
 				
 				//buff[r-1] = '\0';

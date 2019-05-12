@@ -126,7 +126,7 @@ float calculaMont(int code, int quant){
 	float price = -1.0;
 
 	price = getPrice(code);
-	printf("price: %f\n", price);
+	printf("%f \n", price);
 	price*=quant;
 	
 	return price;
@@ -166,7 +166,6 @@ int makeVenda(int code, int quant){
 
 	if( (-quant) <= stocksReadQ(code)){
 		m = calculaMont(code,(-quant));
-		printf("%f\n", m);
 		vendasAppend(code, -quant, m);
 		ns = stocksWrite(code, quant);
 	}
@@ -228,6 +227,7 @@ void printVenda(){
 	
 
 }
+
 //«««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««
 
 int main(int argc, char const *argv[]){
@@ -235,6 +235,20 @@ int main(int argc, char const *argv[]){
 	int r, i;
 
 	signal(SIGINT, terminar);
+
+	/*
+		if(argc == 2)
+			if( !(strcmp(argv[1], "a"))
+				fork/exec
+					int fd = open(vendas)
+					dup2(fd, STDIN)
+					close(fd)
+					exec(ag, ag, (nome com data), NULL)
+				wait
+				return
+		
+
+	*/
 
 	mkfifo("pedidos", 0600);		//pipes para os artigos
 
@@ -283,7 +297,6 @@ int main(int argc, char const *argv[]){
 					 			}
 					 			else{
 					 			 	ns = makeVenda(code, quant);
-					 			 	printf("%d %d\n", code, quant);
 					 			 	printVenda();
 					 			}
 
