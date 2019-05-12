@@ -1,16 +1,47 @@
 #include <fcntl.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/wait.h>
 #include <time.h>
 
 
-int agregacao_simples(char* filename, int init, int fim)
-{
+int append_file(char* f1, char* f2){
+	int fd_1 = open(f1, O_WRONLY, 0644);
+	int fd_2 = open(f2, O_RDONLY, 0644);
 
+	int size1 = lseek(fd_1, 0, SEEK_END); // determina o tamanho do ficheiro 1
+	int size2 = lseek(fd_2, 0, SEEK_END); // determina o tamanho do ficheiro 2
+
+	char* lido = malloc(size2);
+
+	read(fd_2, lido, size2);
+	write(fd_1, lido, size2);
+
+	close(fd_1);
+	close(fd_2);
+
+	return (size1 + size2);
+}
+
+
+char* creat_file(int pid){
+	char* nome = malloc(6);
+	sprintf(nome, "%d", pid);
+
+	int fd = open(nome, O_CREAT, 0777);
+	close(fd);
+	
+	return nome;
+}
+
+
+int agregacao_simples(char* filename, char* new_file, int init, int fim)
+{
 	int num_linhas;
 	int i, c, cod, quantidade, montante, q, m;
-	int fd = open(filename, O_RDWR | O_CREAT, 0644);
+	int fd = open(filename, O_RDWR| O_CREAT, 0777);
+	int n_fd = open(new_file, O_WRONLY, 0777);
 
 	if(fd == -1)
 		_exit(-1);
@@ -44,20 +75,22 @@ int agregacao_simples(char* filename, int init, int fim)
 					else lseek(fd, sizeof(int) + sizeof(float), SEEK_CUR);
 					i += (2*sizeof(int) + sizeof(float)) - 1;
 				}
-				lseek(fd, num_linhas, SEEK_SET);
+				lseek(fd, num_linhas + 2*sizeof(int) + sizeof(float), SEEK_SET);
 				
-				write(fd, &cod, sizeof(int));
-				write(fd, &quantidade, sizeof(int));
-				write(fd, &montante, sizeof(float));
+				write(n_fd, &cod, sizeof(int));
+				write(n_fd, &quantidade, sizeof(int));
+				write(n_fd, &montante, sizeof(float));
 			}
 			else lseek(fd, sizeof(int) + sizeof(float), SEEK_CUR);
-			num_linhas += (2*sizeof(int) + sizeof(float)) - 1; 
+			num_linhas += (2*sizeof(int) + sizeof(float)) - 1;
 		}
 	}
 
 	close(fd);
+	close(n_fd);
 	return num_linhas;
 }
+
 
 void agregacao_final(char* filename, char* new_file, int init, int fim, int num)
 {
@@ -118,37 +151,45 @@ void agregacao_final(char* filename, char* new_file, int init, int fim, int num)
 	close(n_fd);
 }
 
+
 void split_work(char* filename, char* new_file, int init)
 {
-	int status, num, x = 1, y = init;
-	printf("tou a comecar\n");
+	char* nome_pid = malloc(6);
+	int pid, status, num, y = init;
+	
 	int fd = open(filename, O_RDONLY);
 	int size = lseek(fd, init, SEEK_END); // determina o tamanho do ficheiro a partir de onde se quer começar
 	close(fd);
 	
-	printf("size : %d\n", size);
-	if (size < 10000) num = 50;
-	else num = size % 100;
+	int fdi = open("file_intermedio", O_RDWR | O_CREAT);
 
-	printf("vou fazer %d forks\n", num );
-	for (int i = 0; i <= size; i += x*(size/num) )
+	if (size < 10000) num = 20;
+	else num = size % 60;
+
+	printf("size %d, vou fazer %d forks\n", size, num);
+	for (int i = 0; i <= size; i += (size/num) )
 	{
 		if(!fork())
 		{
-			agregacao_simples(filename, y, i);
+			nome_pid = creat_file(getpid());
+			agregacao_simples(filename, nome_pid, y, i);
 			_exit(1);
 		}
 		y = i;
 	}
+	for (int i = 0; i < num; i++)
+		if((pid = wait(&status)) != -1){
+			sprintf(nome_pid, "%d", pid);
+			printf("\t%d . .", append_file("file_intermedio", nome_pid));
+			// delete file nome_pid
+			printf("\tacabei um fork %d\n", i);
+		}
 
-	for (int i = 0; i <= num; i++)
-		while(wait(&status) != -1)
-			printf("acabei um fork\n");
-	
-	printf("vou agregar tudo");
-	
-	agregacao_final(filename, new_file, 0, size, num);
+	printf("vou agregar tudo\n");
 
+	//agregacao_final("file_intermedio", new_file, 0, size, num);
+
+	close(fd_i);
 	printf("acabei\n");
 }
 
