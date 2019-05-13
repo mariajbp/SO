@@ -292,7 +292,6 @@ int main(int argc, char *argv[]){
 		int status;
 		if( !(strcmp(argv[1], "a")) )
 			if( !(fork()) ){
-				printf("Ma chamou Sv\n");
 				execlp("sv", "sv", "a", NULL);
 			}
 			wait(&status);
@@ -301,8 +300,6 @@ int main(int argc, char *argv[]){
 		
 
 		while( (r = readln(0, buff, 150)) ){
-				
-				//buff[r-1] = '\0';
 
 				if(buff[0] == 'i')
 				{
