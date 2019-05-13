@@ -208,23 +208,6 @@ int validaInputCV(char** args, int i){
 	return r;
 }
 
-void printVenda(){
-
-	int fd = open("vendas", O_RDONLY);
-	int c, q;
-	float m;
-	lseek(fd, -(sizeof(int)*2 + sizeof(float)), SEEK_END);
-	read(fd, &c, sizeof(int));
-	read(fd, &q, sizeof(int));
-	read(fd, &m, sizeof(float));
-
-	close(fd);
-	char buff[50];
-	sprintf(buff, "%d %d %f", c, q, m);
-	printf("%s\n", buff);
-	
-
-}
 
 // Função que gera o ficheiro logs com o numero de bytes da ultima agregação colocado em apendice
 int logs(int size){
@@ -325,7 +308,6 @@ int main(int argc, char const *argv[]){
 					 			}
 					 			else{
 					 			 	ns = makeVenda(code, quant);
-					 			 	printVenda();
 					 			}
 
 						 		char *r = malloc(50);

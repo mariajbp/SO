@@ -118,17 +118,12 @@ int renameStr(int code, char* new_name, short size)
 		_exit(-1);
 	else
 	{	
-		//Ler o lixo
 		read(fd, &lixo, sizeof(int));
-		
-		//Incrementar o lixo
 		lixo = lixo+size;
 
-		//Escrever o lixo
 		lseek(fd, 0, SEEK_SET);
 		write(fd, &lixo, sizeof(int));
 
-		//Update ref
 		ref = lseek(fd, 0 ,SEEK_END);
 		write(fd, new_name, strlen(new_name));
 	}

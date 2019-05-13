@@ -86,10 +86,6 @@ void terminar(int signum);
  */
 int validaInputCV(char** args, int i);
 
-/**
- * Função que faz print de uma venda
- */
-void printVenda();
 
 /**
  * Função que gera o ficheiro logs com o numero de bytes da ultima agregação colocado em apendice
