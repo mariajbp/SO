@@ -124,6 +124,7 @@ float calculaMont(int code, int quant){
 	float price = -1.0;
 
 	price = getPrice(code);
+	printf("%f \n", price);
 	price*=quant;
 	
 	return price;
@@ -207,6 +208,23 @@ int validaInputCV(char** args, int i){
 	return r;
 }
 
+void printVenda(){
+
+	int fd = open("vendas", O_RDONLY);
+	int c, q;
+	float m;
+	lseek(fd, -(sizeof(int)*2 + sizeof(float)), SEEK_END);
+	read(fd, &c, sizeof(int));
+	read(fd, &q, sizeof(int));
+	read(fd, &m, sizeof(float));
+
+	close(fd);
+	char buff[50];
+	sprintf(buff, "%d %d %f", c, q, m);
+	printf("%s\n", buff);
+	
+
+}
 
 // Função que gera o ficheiro logs com o numero de bytes da ultima agregação colocado em apendice
 int logs(int size){
@@ -214,11 +232,11 @@ int logs(int size){
 	
 	int fd_LOGS = open("logs_ag", O_RDWR | O_CREAT, 0644);
 	if(!lseek(fd_LOGS, 0, SEEK_END)) write(fd_LOGS, &c, sizeof(int));
-	else{
-		lseek(fd_LOGS, -(sizeof(int)), SEEK_END); 
-		read(fd_LOGS, &init, sizeof(int)); 
-		write(fd_LOGS, &size, sizeof(int)); 
-	}
+
+	lseek(fd_LOGS, -(sizeof(int)), SEEK_END);
+	read(fd_LOGS, &init, sizeof(int)); 
+	write(fd_LOGS, &size, sizeof(int)); 
+
 
 	return init;
 }
@@ -242,15 +260,16 @@ int main(int argc, char const *argv[]){
 
 					char* date = malloc(17);
 					info = localtime(&t);
-					strftime(date, 17, "%d_%m_%y_%X", info);
+					strftime(date, 17, "%d_%m_%y_%Ss%Mm", info);
 
 					int fd = open("vendas", O_RDONLY);
 					int size = lseek(fd, 0, SEEK_END);
-					dup2(fd, STDIN_FILENO);
 					close(fd);
 
-					printf("size vendas %d, init %d\n", size, logs(size) );
-					execlp("ag", "ag", "vendas", date, logs(size), NULL);
+					int init = logs(size);
+
+					execlp("./ag", "./ag", "vendas", date, init, NULL);
+					exit(1);
 				}
 				wait(&status);
 			}
@@ -306,6 +325,7 @@ int main(int argc, char const *argv[]){
 					 			}
 					 			else{
 					 			 	ns = makeVenda(code, quant);
+					 			 	printVenda();
 					 			}
 
 						 		char *r = malloc(50);

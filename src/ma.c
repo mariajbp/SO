@@ -288,7 +288,8 @@ int main(int argc, char *argv[]){
 		int status;
 		if( !(strcmp(argv[1], "a")) ){
 			if( !(fork()) ){
-				execlp("sv", "sv", "a", NULL);
+				execlp("./sv", "./sv", "a", NULL);
+				exit(1);
 			}
 			wait(&status);
 		}
