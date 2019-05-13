@@ -13,10 +13,19 @@
 #include <ctype.h>
 #include <time.h>
 
-/**
- * O QUE FAZ
- * @param O QUE RECEBE
- * @param O QUE RETORNA
+
+/**Readline 
+ * @param descritor do ficheiro
+ * @param buffer para onde vai ler
+ * @param numero de bytes a ler
  */
+ssize_t readln(int fildes, void* buff, size_t n);
+
+
+/**
+ * Handler do Ctr-C para terminar o processo e fazer unlink do pipe pedidos
+ * @param sinal
+ */
+void terminar(int signum);
 
 #endif

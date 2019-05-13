@@ -209,6 +209,21 @@ int validaInputCV(char** args, int i){
 }
 
 
+// Função que gera o ficheiro logs com o numero de bytes da ultima agregação colocado em apendice
+int logs(int size){
+	int c = 0, init;
+	
+	int fd_LOGS = open("logs_ag", O_RDWR | O_CREAT, 0644);
+	if(!lseek(fd_LOGS, 0, SEEK_END)) write(fd_LOGS, &c, sizeof(int));
+	else{
+		lseek(fd_LOGS, -(sizeof(int)), SEEK_END); // poe o descritor na ultima posicao
+		read(fd_LOGS, &init, sizeof(int)); // le o inicio
+		write(fd_LOGS, &size, sizeof(int)); // escreve a nova ultima linha
+	}
+
+	return init;
+}
+
 //«««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««
 
 int main(int argc, char const *argv[]){
@@ -220,24 +235,27 @@ int main(int argc, char const *argv[]){
 	
 		if(argc == 2){
 			int status;
-			if( !(strcmp(argv[1], "a")) )
+			if( !(strcmp(argv[1], "a")) ){
 				if( !(fork()) ){
 					time_t t;
 					struct tm *info;
-
 					time(&t);
 
 					char* date = malloc(17);
+					info = localtime(&t);
 					strftime(date, 17, "%d_%m_%y_%X", info);
-					printf("%s\n", date);
+
 					int fd = open("vendas", O_RDONLY);
+					int size = lseek(fd, 0, SEEK_END);
 					dup2(fd, STDIN_FILENO);
 					close(fd);
 
-					execlp("ag", "ag", "vendas", date, NULL);
+					printf("size vendas %d, init %d\n", size, logs(size) );
+					execlp("ag", "ag", "vendas", date, logs(size), NULL);
 				}
 				wait(&status);
-				return 0;
+			}
+			return 0;
 		}
 		
 
@@ -271,8 +289,8 @@ int main(int argc, char const *argv[]){
 							if(resp < 0)
 								_exit(-1);
 
-								write(resp, r, size);
-								close(resp);
+							write(resp, r, size);
+							close(resp);
 							free(r);
 						}
 				 	}
@@ -300,7 +318,6 @@ int main(int argc, char const *argv[]){
 									_exit(-1);
 
 								write(resp, r, size);
-
 								close(resp);
 								free(r);
 							}
@@ -314,11 +331,9 @@ int main(int argc, char const *argv[]){
 									_exit(-1);
 
 								write(resp, "i", 1);
-
 								close(resp);
 				}
 				free(args);
-
 			}
 		close(fd);	
 	}

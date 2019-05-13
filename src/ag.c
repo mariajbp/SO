@@ -1,6 +1,21 @@
 #include "../include/ag.h"
 
-int append_file(char* head, char* tail){
+//Função que faz parsing de uma linha
+int parse(char* buff, char** str){
+
+	char* tok;
+	tok = strtok(buff, " ");
+	int i;
+
+	for( i = 0; tok ; i++){
+		str[i] = strdup(tok);
+		tok = strtok(NULL, " ");
+	}
+	return i;
+}
+
+// Função que dá append de um ficheiro tail num ficheiro head
+int append_file(const char* head, const char* tail){
 
 	int cod, quantidade, montante;
 	int fd_1 = open(head, O_WRONLY);
@@ -30,7 +45,7 @@ int append_file(char* head, char* tail){
 	return (size1 + size2);
 }
 
-
+// Função cria um ficheiro com o nome de um inteiro
 char* creat_file(int pid){
 	char* nome = malloc(6);
 	sprintf(nome, "%d", pid);
@@ -41,8 +56,8 @@ char* creat_file(int pid){
 	return nome;
 }
 
-
-int agregacao_simples(char* filename, char* new_file, int init, int fim)
+// Função que agrega um ficheiro de formato vendas de forma sequencial, do inicio escolhido ao fim escolhido
+int agregacao_simples(const char* filename, const char* new_file, int init, int fim)
 {
 	int num_linhas;
 	int i, c, cod, quantidade, montante, q, m;
@@ -97,8 +112,8 @@ int agregacao_simples(char* filename, char* new_file, int init, int fim)
 	return num_linhas;
 }
 
-
-void agregacao_final(char* filename, char* new_file, int init, int fim, int num)
+// Função que agrega um ficheiro de formato vendas de forma sequencial, do inicio escolhido ao fim escolhido
+void agregacao_final(const char* filename, const char* new_file, int init, int fim, int num)
 {
 	int x, c, cod, quantidade, montante, q, m;
 	int fd = open(filename, O_RDWR, 0644);
@@ -156,8 +171,8 @@ void agregacao_final(char* filename, char* new_file, int init, int fim, int num)
 	close(n_fd);
 }
 
-
-void split_work(char* filename, char* new_file, int init)
+// Função que cria concorrencia dos processos de agregação
+void split_work(const char* filename, const char* new_file, int init)
 {
 	char* nome_pid = malloc(6);
 	int pid, status, num, y = init;
@@ -199,17 +214,13 @@ void split_work(char* filename, char* new_file, int init)
 }
 
 
-int main(){
-
-	clock_t start, end;
-	double cpu_time_used;
-	start = clock();
-
-	split_work("vendas_in", "vendas_out", 0);
-
-	end = clock();
-	cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-	printf("\n\n\tCPU Time:%f\n\n", cpu_time_used );
+int main(int argc, char const *argv[]){
+	//O agregador recebe o nome do ficheiro a agregar, o ficheiro onde se vai colocar a agregação e o inicio pretendido da agregação.
+	
+	if(argc == 4){
+		
+		split_work(argv[1], argv[2], atoi(argv[3]));
+	}
 
 	return 0;
 }

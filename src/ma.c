@@ -285,12 +285,13 @@ int main(int argc, char *argv[]){
 	
 	if(argc == 2){
 		int status;
-		if( !(strcmp(argv[1], "a")) )
+		if( !(strcmp(argv[1], "a")) ){
 			if( !(fork()) ){
 				execlp("sv", "sv", "a", NULL);
 			}
 			wait(&status);
-			return 0;
+		}
+		return 0;
 	}
 		
 
