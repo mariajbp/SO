@@ -84,12 +84,12 @@ void terminar(int signum);
  * @param numero de argumentos passados
  * @returns validação do input
  */
-int validaInputCV(char** args, int i)
+int validaInputCV(char** args, int i);
 
 
 /**
  * Função que faz print de uma venda
  */
-void printVenda()
+void printVenda();
 
 #endif
