@@ -15,7 +15,7 @@ int parse(char* buff, char** str){
 }
 
 // Função que dá append de um ficheiro tail num ficheiro head
-int append_file(char* head, char* tail){
+int append_file(const char* head, const char* tail){
 
 	int cod, quantidade, montante;
 	int fd_1 = open(head, O_WRONLY);
@@ -57,7 +57,7 @@ char* creat_file(int pid){
 }
 
 // Função que agrega um ficheiro de formato vendas de forma sequencial, do inicio escolhido ao fim escolhido
-int agregacao_simples(char* filename, char* new_file, int init, int fim)
+int agregacao_simples(const char* filename, const char* new_file, int init, int fim)
 {
 	int num_linhas;
 	int i, c, cod, quantidade, montante, q, m;
@@ -113,7 +113,7 @@ int agregacao_simples(char* filename, char* new_file, int init, int fim)
 }
 
 // Função que agrega um ficheiro de formato vendas de forma sequencial, do inicio escolhido ao fim escolhido
-void agregacao_final(char* filename, char* new_file, int init, int fim, int num)
+void agregacao_final(const char* filename, const char* new_file, int init, int fim, int num)
 {
 	int x, c, cod, quantidade, montante, q, m;
 	int fd = open(filename, O_RDWR, 0644);
@@ -172,7 +172,7 @@ void agregacao_final(char* filename, char* new_file, int init, int fim, int num)
 }
 
 // Função que cria concorrencia dos processos de agregação
-void split_work(char* filename, char* new_file, int init)
+void split_work(const char* filename, const char* new_file, int init)
 {
 	char* nome_pid = malloc(6);
 	int pid, status, num, y = init;
@@ -217,11 +217,9 @@ void split_work(char* filename, char* new_file, int init)
 int main(int argc, char const *argv[]){
 	//O agregador recebe o nome do ficheiro a agregar, o ficheiro onde se vai colocar a agregação e o inicio pretendido da agregação.
 	
-	if(argc == 3){
-		char** args = malloc(sizeof(char**));
-		i = parse(c,args);
+	if(argc == 4){
 		
-		split_work(args[0], args[1], atoi(args[2]));
+		split_work(argv[1], argv[2], atoi(argv[3]));
 	}
 
 	return 0;

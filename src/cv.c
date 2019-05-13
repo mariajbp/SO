@@ -71,10 +71,10 @@ int main(int argc, char const *argv[])
 				}
 				while( !strcmp(out_line, "") )
 					readln(fd_r, out_line, 50);
-				if( strcmp(out_line, "i"))
+				if( strcmp(out_line, "i")){
 					write(1, out_line, strlen(out_line));
 					write(1, "\n", 1);
-
+				}
 				free(out_line);
 				free(args);		
 		}
