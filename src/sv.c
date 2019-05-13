@@ -1,6 +1,7 @@
 #include "../include/sv.h"
 
 
+//Função que lê uma linha
 ssize_t readln(int fildes, void* buff, size_t n){ 
     char c = ' ';
     size_t s = 0, r = 1;
@@ -68,7 +69,6 @@ int stocksReadQ(int code){
 	if(fd == -1)
 		_exit(-1);
 	else{
-		//Atualiza o apontador para o local do código + da quantidade
 		lseek(fd, (code-1)*sizeof(int), SEEK_SET);
 		
 		if( (read(fd, &quant, sizeof(int))) == 0)
@@ -215,9 +215,9 @@ int logs(int size){
 	int fd_LOGS = open("logs_ag", O_RDWR | O_CREAT, 0644);
 	if(!lseek(fd_LOGS, 0, SEEK_END)) write(fd_LOGS, &c, sizeof(int));
 	else{
-		lseek(fd_LOGS, -(sizeof(int)), SEEK_END); // poe o descritor na ultima posicao
-		read(fd_LOGS, &init, sizeof(int)); // le o inicio
-		write(fd_LOGS, &size, sizeof(int)); // escreve a nova ultima linha
+		lseek(fd_LOGS, -(sizeof(int)), SEEK_END); 
+		read(fd_LOGS, &init, sizeof(int)); 
+		write(fd_LOGS, &size, sizeof(int)); 
 	}
 
 	return init;
@@ -259,7 +259,7 @@ int main(int argc, char const *argv[]){
 		
 
 
-	mkfifo("pedidos", 0600);		//pipes para os artigos
+	mkfifo("pedidos", 0600);		
 
 	while(1){
 		int fd = open("pedidos", O_RDONLY);

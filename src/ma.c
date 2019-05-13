@@ -1,6 +1,6 @@
 #include "../include/ma.h" 
 
-
+//Função que lê uma linha
 ssize_t readln(int fildes, void* buff, size_t n){ 
     char c = ' ';
     size_t s = 0, r = 1;
@@ -98,7 +98,7 @@ void changePrice(int code, float newp)
 		_exit(-1);
 	else
 	{
-		lseek(fd, (code - 1)*size_artigos, SEEK_SET);  //(code-1) porque os códigos começam no 1
+		lseek(fd, (code - 1)*size_artigos, SEEK_SET); 
 		lseek(fd, sizeof(int)+sizeof(short), SEEK_CUR); 
 		write(fd, &newp, sizeof(float));
 	}
@@ -189,7 +189,7 @@ void stockAppend(){
 	close(fd);
 }
 
-//calculo dos 20%
+//Função que calcula se o ficheiro strings tem 20% de desperdício
 int twenty()
 {
 	int res = 0, lixo, fd;
@@ -211,19 +211,19 @@ int twenty()
 	return res;
 }
 
-//	Função que limpa o lixo
+//Função que limpa o lixo
 void clearTrash()
 {
 	int fd, fs, fa, code, ref, lixo = 0;
 	short size;
 	
-	//Ficheiro temporário das strings
+	
 	fd = open("temp", O_CREAT | O_WRONLY, 0644);
 	if(fd == -1)
 		_exit(-1);
 	int w = write(fd, &lixo, sizeof(int));
 
-	//Calcular o número de códigos totais
+
 	fa = open("artigos", O_RDONLY);
 	if(fa == -1)
 		_exit(-1);
@@ -231,12 +231,12 @@ void clearTrash()
 	codeT = codeT/(size_artigos);
 	close(fa);
 
-	//Copiar para o ficheiro temporário
+	
 	fs = open("strings", O_RDONLY);
 	if(fd == -1)
 		_exit(-1);
 	for(code = 1; code <= codeT; code++){
-			//Get ref e get size no ficheiro artigos
+			
 			fa = open("artigos", O_RDONLY);
 			if(fa == -1)
 				_exit(-1);
@@ -245,16 +245,16 @@ void clearTrash()
 			read(fa, &size, sizeof(short));
 			close(fa);
 
-			//Get line no ficheiro strings
+			
 			lseek(fs, ref, SEEK_SET);
 			char* line = malloc(size);
 			read(fs, line, size);
 
-			//Escreve no ficheiro temp
+			
 			w = lseek(fd, 0, SEEK_CUR);
 			write(fd, line, size);
 
-			//Atualiza ref no artigos
+			
 			updateRef(code, w, size);
 			free(line);
 
@@ -277,6 +277,7 @@ int renameTemp(){
 	return WIFEXITED(status);
 }
 
+//««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««
 
 int main(int argc, char *argv[]){
 	char* buff = malloc(150);

@@ -1,6 +1,6 @@
 #include "../include/cv.h"
 
-
+//Função que lê uma linha
 ssize_t readln(int fildes, void* buff, size_t n){ 
     char c = ' ';
     size_t s = 0, r = 1;
@@ -22,7 +22,7 @@ ssize_t readln(int fildes, void* buff, size_t n){
     return s;
 }
 
-
+//Handler para o CTR-C
 void terminar(int signum){
 	pid_t p = getpid();
 	char* pid = malloc(10);
@@ -31,6 +31,7 @@ void terminar(int signum){
 	kill(p, SIGQUIT);
 }
 
+//«««««««««««««««««««««««««««««««««««««««««««««««««««««««««««««
 
 int main(int argc, char const *argv[])
 {
