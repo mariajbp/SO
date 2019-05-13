@@ -13,6 +13,28 @@
 #include <ctype.h>
 #include <time.h>
 
+
+/**Readline 
+ * @param descritor do ficheiro
+ * @param buffer para onde vai ler
+ * @param numero de bytes a ler
+ */
+ssize_t readln(int fildes, void* buff, size_t n);
+
+/**Função que faz parsing de uma linha de vendas
+ * @param buffer
+ * @param string
+ * @return numero de bytes lidos
+ */
+int parse(char* buff, char** str);
+
+/**
+ * Função que dado o código do artigo retorna o seu preço
+ * @param código do artigo
+ * @returns preço do artigo
+ */
+float getPrice(int code);
+
 /**
  * Função que procura um código no ficheiro stocks 
  * @param código de um artigo
@@ -43,13 +65,6 @@ float calculaMont(int code, int quant);
 void vendasAppend(int code, int quant, float mont);
 
 /**
- * Função que dado o código do artigo retorna o seu preço
- * @param código do artigo
- * @returns preço do artigo
- */
-float getPrice(int code);
-
-/**
  * Função que realiza uma venda/restock
  * @param codigo do artigo
  * @param quantidade existente do artigo em stock
@@ -62,5 +77,19 @@ int makeVenda(int code, int quant);
  * @param sinal
  */
 void terminar(int signum);
+
+/**
+ * Função que valida o input do CV
+ * @param argumentos passados na linha de comandos
+ * @param numero de argumentos passados
+ * @returns validação do input
+ */
+int validaInputCV(char** args, int i)
+
+
+/**
+ * Função que faz print de uma venda
+ */
+void printVenda()
 
 #endif

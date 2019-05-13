@@ -10,7 +10,8 @@
 
 /**
  * Função que dá append de um ficheiro tail num ficheiro head
- * @param head file, tail file
+ * @param head file 
+ * @param tail file
  * @returns quantidade total do ficheiro head no fim do append
  */
 int append_file(char* head, char* tail);
@@ -24,20 +25,29 @@ char* creat_file(int pid);
 
 /**
  * Função que agrega um ficheiro de formato vendas de forma sequencial, do inicio escolhido ao fim escolhido
- * @param filename, new_file, inicio da agregação, fim da agregação
- * @returns quantidade de bytes lidos
+ * @param nome do ficheiro a agregar
+ * @param nome do ficheiro final agregado 
+ * @param inicio da agregação
+ * @param fim da agregação
+ * @returns numero de bytes lidos
  */
 int agregacao_simples(char* filename, char* new_file, int init, int fim);
 
 /**
  * Função que agrega um ficheiro de formato vendas de forma sequencial, do inicio escolhido ao fim escolhido
- * @param filename, new_file, inicio da agregação, fim da agregação, num de vezes que um artigo pode lá aparecer
+ * @param nome do ficheiro a agregar
+ * @param nome do ficheiro final agregado 
+ * @param inicio da agregação
+ * @param fim da agregação
+ * @returns numero de vezes que a venda aparece no ficheiro
  */
 void agregacao_final(char* filename, char* new_file, int init, int fim, int num);
 
 /**
  * Função que cria concorrencia dos processos de agregação
- * @param filename, new_file, inicio da agregação
+ * @param nome do ficheiro a agregar
+ * @param nome do ficheiro final agregado 
+ * @param inicio da agregação
  */
 void split_work(char* filename, char* new_file, int init);
 
