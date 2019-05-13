@@ -124,7 +124,6 @@ float calculaMont(int code, int quant){
 	float price = -1.0;
 
 	price = getPrice(code);
-	printf("%f \n", price);
 	price*=quant;
 	
 	return price;

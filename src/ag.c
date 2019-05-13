@@ -193,6 +193,7 @@ void split_work(const char* filename, const char* new_file, int init)
 			if(!fork())
 			{
 				nome_pid = creat_file(getpid());
+				printf("vou começar %s\n", nome_pid);
 				agregacao_simples(filename, nome_pid, y, i);
 				_exit(1);
 			}
@@ -203,6 +204,7 @@ void split_work(const char* filename, const char* new_file, int init)
 		if((pid = wait(&status)) != -1){
 			sprintf(nome_pid, "%d", pid);
 			append_file("file_intermedio", nome_pid);
+			printf("acabei %s\n", nome_pid);
 			remove(nome_pid);
 		}
 
