@@ -277,11 +277,6 @@ int renameTemp(){
 	return WIFEXITED(status);
 }
 
-/*
-int validaInputMA(char** args){
-	
-
-}*/
 
 int main(int argc, char *argv[]){
 	char* buff = malloc(150);
